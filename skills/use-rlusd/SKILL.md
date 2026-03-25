@@ -1,7 +1,7 @@
 ---
 name: use-rlusd
 description: Route RLUSD requests to the correct chain workflow and keep side effects behind explicit planning.
-user-invocable: false
+user-invocable: true
 ---
 
 # Purpose
@@ -37,6 +37,10 @@ task belongs to Ethereum or XRPL.
 - Route to `rlusd-trustline` for explicit reviewed XRPL trust-line creation or
   updates.
 - Route to `rlusd-defi-action` for explicit reviewed RLUSD DeFi action flows.
+- Route to `rlusd-wallets` when the user says "my wallet" or a planned command
+  needs `--from-wallet`, `--owner-wallet`, or `--wallet`.
+- Before any wallet-backed action flow, load `rlusd-wallets` to confirm or
+  provision the local wallet alias with explicit user approval.
 - Keep all write actions on a `prepare -> review -> execute` path.
 - Ethereum and XRPL both support `prepare` and `execute`.
 - Use chain-specific wait and receipt commands after execution instead of
@@ -48,14 +52,16 @@ task belongs to Ethereum or XRPL.
 2. For Ethereum DeFi discovery, live swap quotes, and Aave supply preview/prepare/execute,
    use the `defi` namespace.
 3. For Ethereum reads, use the `evm` namespace.
-4. For Ethereum planning, use the `prepare` commands first and only call `execute`
+4. Before any wallet-backed Ethereum or XRPL action, load `rlusd-wallets` if
+   the flow depends on a local wallet alias.
+5. For Ethereum planning, use the `prepare` commands first and only call `execute`
    with an explicit confirmation that matches the prepared plan id.
-5. For chain-specific post-submit status, use `evm tx ...` or `xrpl tx ...`
+6. For chain-specific post-submit status, use `evm tx ...` or `xrpl tx ...`
    commands plus chain-specific receipt commands.
-6. For institutional onboarding, direct buy, and redeem guidance, use the `fiat`
+7. For institutional onboarding, direct buy, and redeem guidance, use the `fiat`
    namespace.
-7. For XRPL reads, planning, execution, and receipts, use the `xrpl` namespace.
-8. Load the matching child skill before attempting chain-specific reasoning.
+8. For XRPL reads, planning, execution, and receipts, use the `xrpl` namespace.
+9. Load the matching child skill before attempting chain-specific reasoning.
 
 ```bash
 rlusd resolve asset --chain ethereum-mainnet --json
@@ -92,6 +98,8 @@ rlusd fiat redeem instructions --json
 - Ethereum RLUSD must use the proxy contract, not the implementation contract.
 - XRPL flows depend on issuer and trust-line semantics and should not be treated
   like ERC-20 transfers.
+- Do not assume example wallet aliases like `ops` or `treasury-xrpl` already
+  exist locally; use `rlusd-wallets` first when a flow depends on them.
 - `defi quote swap` is live quote data and should be described with quote
   freshness metadata such as `quoted_at`, `ttl_seconds`, and `expires_at`.
 - If a requested chain is missing from the registry, fail clearly and extend the
@@ -102,6 +110,7 @@ rlusd fiat redeem instructions --json
 - "Check RLUSD metadata on Ethereum." -> use `use-rlusd-ethereum`
 - "Where can RLUSD be used in DeFi?" -> use `use-rlusd-evm-defi`
 - "Can this XRPL wallet receive RLUSD?" -> use `use-rlusd-xrpl`
+- "Check whether I have an RLUSD wallet configured." -> use `rlusd-wallets`
 - "How do I buy or redeem RLUSD directly with Ripple?" -> use `buy-redeem-rlusd`
 
 # References

@@ -1,7 +1,7 @@
 ---
 name: use-rlusd-xrpl
 description: RLUSD on XRPL. Use for issuer resolution, trust-line semantics, read commands, prepare workflows, controlled execution, and transaction status checks.
-user-invocable: false
+user-invocable: true
 ---
 
 # Purpose
@@ -27,6 +27,9 @@ core parts of the workflow.
 - Treat trust-line verification as a prerequisite for receive and transfer
   workflows.
 - Keep destination-tag handling explicit whenever counterparties require it.
+- Before wallet-backed XRPL payment or trust-line execution flows, load
+  `rlusd-wallets` to distinguish the on-ledger `r...` address from the local
+  signer alias used by `--wallet` or `--from-wallet`.
 - For explicit trust-line creation/update flows, use `rlusd-trustline`.
 - For explicit XRPL payment flows, use `rlusd-transfer`.
 
@@ -59,6 +62,8 @@ Use the output to confirm:
 - XRPL RLUSD is an issued token, not an ERC-20 balance entry.
 - Missing trust lines should block payment planning instead of being treated as
   a recoverable transfer error.
+- Do not assume the XRPL account address is the same thing as the local signer
+  wallet alias; use `rlusd-wallets` before wallet-backed action steps.
 - If a network or issuer value is absent from the registry, extend the registry
   rather than guessing live XRPL metadata.
 - Treat `prepare` output as a review artifact. Do not skip directly to execution
@@ -71,6 +76,7 @@ Use the output to confirm:
 - "What issuer account backs RLUSD on XRPL?" -> run `resolve asset`
 - "Can this XRPL account receive RLUSD?" -> run `trustline status`
 - "Does this XRPL address exist and what is its sequence?" -> run `account info`
+- "Prepare an RLUSD payment from my XRPL wallet for review." -> use `rlusd-wallets`, then run `payment prepare`
 - "Prepare an RLUSD trust line for review." -> run `trustline prepare`
 - "Prepare an RLUSD payment for review." -> run `payment prepare`
 - "Submit the reviewed RLUSD trust line change." -> run `trustline execute`

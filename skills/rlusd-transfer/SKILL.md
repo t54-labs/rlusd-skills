@@ -1,6 +1,7 @@
 ---
 name: rlusd-transfer
 description: Execute an explicit RLUSD transfer or payment workflow using the external rlusd-cli runtime with prepare, review, execute, and receipt steps.
+user-invocable: true
 ---
 
 # Purpose
@@ -27,6 +28,9 @@ through the action workflow rather than just inspect metadata or balances.
 
 - On Ethereum, use `evm transfer ...` for token transfers and `evm approve ...`
 - On XRPL, use `xrpl payment ...`
+- Before any command that uses `--from-wallet`, `--owner-wallet`, or `--wallet`,
+  load `rlusd-wallets` to confirm the local wallet alias or provision one with
+  explicit user approval.
 - Always start with `prepare`, review the resulting `plan_id` and `plan_path`,
   then call `execute` with a matching `--confirm-plan-id`.
 - After submit, use the chain-specific wait or receipt commands instead of
@@ -53,6 +57,8 @@ rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 
 - Use the exact `plan_path` and `plan_id` returned by `prepare`.
 - Ethereum and XRPL mainnet execution requires explicit confirmation.
+- Do not assume example wallet aliases like `ops` or `treasury-xrpl` already
+  exist locally; use `rlusd-wallets` before wallet-backed transfer steps.
 - XRPL payment execution depends on the destination account already having a
   trust line when RLUSD is required there.
 - Follow wait/receipt commands after execution instead of assuming submission
@@ -61,5 +67,6 @@ rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 # Examples
 
 - "Send 25.5 RLUSD on Ethereum." -> run `evm transfer prepare`
+- "Send 25.5 RLUSD on Ethereum from my wallet." -> use `rlusd-wallets`, then run `evm transfer prepare`
 - "Approve RLUSD for this spender." -> run `evm approve prepare`
 - "Pay 250 RLUSD on XRPL." -> run `xrpl payment prepare`

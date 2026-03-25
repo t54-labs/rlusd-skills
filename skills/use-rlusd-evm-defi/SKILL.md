@@ -1,7 +1,7 @@
 ---
 name: use-rlusd-evm-defi
 description: RLUSD in EVM DeFi. Use for venue discovery, live swap quotes, and Aave-only supply preview/prepare/execute flows.
-user-invocable: false
+user-invocable: true
 ---
 
 # Purpose
@@ -30,6 +30,8 @@ preview-first DeFi route selection on EVM chains.
 - Use `defi quote swap` for a live quote only after confirming the venue matrix.
 - Use `defi supply preview` and `defi supply prepare` for the first Aave-only
   lending flow.
+- Before DeFi actions that use `--from-wallet`, load `rlusd-wallets` to confirm
+  the local wallet alias or provision one with explicit user approval.
 - Only call `defi supply execute` after reviewing the prepared two-step plan.
 - For the explicit action workflow around those DeFi commands, use
   `rlusd-defi-action`.
@@ -68,6 +70,8 @@ Use the output to confirm:
   fail clearly if they do not advertise `lend`.
 - Aave supply execution depends on a reviewed prepared plan and a configured EVM
   signer.
+- Do not assume the example wallet alias `ops` exists locally; use
+  `rlusd-wallets` before wallet-backed prepare or execute steps.
 - The current Aave supply flow is approve-based; it does not build a permit path
   yet.
 - Venue capability flags are the source of truth for this batch; do not infer
@@ -79,6 +83,7 @@ Use the output to confirm:
 - "Where can RLUSD be used in DeFi on Ethereum?" -> run `defi venues`
 - "Preview swapping 1000 RLUSD to USDC." -> run `defi quote swap`
 - "Preview supplying 5000 RLUSD to Aave." -> run `defi supply preview`
+- "Prepare supplying 5000 RLUSD to Aave from my wallet." -> use `rlusd-wallets`, then run `defi supply prepare`
 - "Prepare supplying 5000 RLUSD to Aave." -> run `defi supply prepare`
 - "Submit the reviewed 5000 RLUSD Aave supply plan." -> run `defi supply execute`
 

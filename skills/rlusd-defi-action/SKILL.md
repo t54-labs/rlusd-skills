@@ -1,6 +1,7 @@
 ---
 name: rlusd-defi-action
 description: Execute an explicit RLUSD DeFi workflow using the external rlusd-cli runtime, with live quote reads and Aave-only supply execution in the current batch.
+user-invocable: true
 ---
 
 # Purpose
@@ -28,6 +29,8 @@ not just discover venues or preview routes.
   capability.
 - Use `defi quote swap` for live quote reads only. Swap execution is not
   implemented in this repo.
+- Before any DeFi action that uses `--from-wallet`, load `rlusd-wallets` to
+  confirm the local wallet alias or provision one with explicit user approval.
 - For the current Aave-only lending flow, use `defi supply preview`, then
   `defi supply prepare`, then `defi supply execute` with the reviewed
   `plan_id`.
@@ -48,10 +51,13 @@ rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <pla
 - The current supply execute path is Aave-only.
 - Aave supply execution submits the stored `approve` step before the stored
   `supply` step.
+- Do not assume the example wallet alias `ops` already exists locally; use
+  `rlusd-wallets` before wallet-backed prepare or execute steps.
 - Mainnet DeFi execution requires explicit confirmation using the prepared
   `plan_id`.
 
 # Examples
 
 - "Prepare supplying 5000 RLUSD to Aave." -> run `defi supply prepare`
+- "Prepare supplying 5000 RLUSD to Aave from my wallet." -> use `rlusd-wallets`, then run `defi supply prepare`
 - "Submit the reviewed Aave supply plan." -> run `defi supply execute`

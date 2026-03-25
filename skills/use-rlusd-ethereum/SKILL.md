@@ -1,7 +1,7 @@
 ---
 name: use-rlusd-ethereum
 description: RLUSD on Ethereum. Use for proxy address resolution, ERC-20 semantics, read commands, prepare workflows, controlled execution, and transaction status checks.
-user-invocable: false
+user-invocable: true
 ---
 
 # Purpose
@@ -29,6 +29,9 @@ current contract metadata or when the workflow depends on ERC-20 behavior.
 - Treat the proxy address as the canonical integration address.
 - Treat issuer-admin features such as freeze, clawback, and upgrades as risk
   constraints, not end-user actions.
+- Before transfer or approval flows that use `--from-wallet` or
+  `--owner-wallet`, load `rlusd-wallets` to confirm the local wallet alias or
+  provision one with explicit user approval.
 - For explicit transfer or approval action flows after the chain is known, use
   `rlusd-transfer`.
 
@@ -61,6 +64,8 @@ Use the output to confirm:
 - Never use the implementation contract when the proxy address is available.
 - Do not hardcode addresses into prompts or scripts when the CLI can resolve
   them.
+- Do not assume the example wallet alias `ops` already exists locally; check it
+  with `rlusd-wallets` before any wallet-backed action.
 - If the user asks for Sepolia and the registry does not have it yet, stop and
   add the registry entry rather than guessing the deployment.
 - Treat `prepare` output as a review artifact. Do not skip directly to execution
@@ -76,6 +81,7 @@ Use the output to confirm:
 - "Is this the proxy or implementation address?" -> inspect `address_type`
 - "What is the RLUSD balance for this wallet?" -> run `evm balance`
 - "Has this spender been approved for RLUSD?" -> run `evm allowance`
+- "Prepare an RLUSD transfer from my wallet for review." -> use `rlusd-wallets`, then run `evm transfer prepare`
 - "Prepare an RLUSD transfer for review." -> run `evm transfer prepare`
 - "Prepare an RLUSD approval for review." -> run `evm approve prepare`
 - "Submit the reviewed RLUSD transfer." -> run `evm transfer execute`

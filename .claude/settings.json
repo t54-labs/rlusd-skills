@@ -1,0 +1,5 @@
+{
+  "enabledPlugins": {
+    "ripple@rlusd-agent-skills": true
+  }
+}

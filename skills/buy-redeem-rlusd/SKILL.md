@@ -1,7 +1,7 @@
 ---
 name: buy-redeem-rlusd
 description: RLUSD institutional onboarding, buy, and redeem guidance. Use for parameterized checklists and wire-flow instructions, not automated fiat execution.
-user-invocable: false
+user-invocable: true
 ---
 
 # Purpose

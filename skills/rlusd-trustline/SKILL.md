@@ -1,6 +1,7 @@
 ---
 name: rlusd-trustline
 description: Create or update an RLUSD XRPL trust line using the external rlusd-cli runtime with explicit prepare, review, execute, and wait steps.
+user-invocable: true
 ---
 
 # Purpose
@@ -25,6 +26,9 @@ line on XRPL.
 # Decision Guide
 
 - Start with `xrpl trustline status` when the current account state is not known.
+- Before any step that depends on a local signer wallet alias, load
+  `rlusd-wallets` to distinguish the on-ledger `r...` address from the local
+  wallet used by `--wallet`.
 - Use `xrpl trustline prepare` to create the reviewed plan artifact.
 - Use `xrpl trustline execute` only with the exact `plan_id` returned by
   `prepare`.
@@ -44,10 +48,13 @@ rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 - Trust-line changes are on-chain state changes and should be reviewed before
   execution.
 - Mainnet trust-line execution requires explicit confirmation.
+- Do not assume an XRPL account address or the example alias `treasury-xrpl` is
+  already configured as a local signer; use `rlusd-wallets` first.
 - A trust line is distinct from an XRPL payment; it is a prerequisite, not the
   transfer itself.
 
 # Examples
 
 - "Create the RLUSD trust line on XRPL." -> run `xrpl trustline prepare`
+- "Create the RLUSD trust line for my XRPL wallet." -> use `rlusd-wallets`, then run `xrpl trustline prepare`
 - "Raise the RLUSD trust line limit to 100000." -> run `xrpl trustline prepare`
