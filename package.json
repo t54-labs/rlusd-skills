@@ -1,0 +1,10 @@
+{
+  "name": "rlusd-skills",
+  "private": true,
+  "packageManager": "pnpm@10.29.3",
+  "scripts": {
+    "build": "pnpm --filter rlusd build",
+    "test": "pnpm --filter rlusd test:run",
+    "typecheck": "pnpm --filter rlusd typecheck"
+  }
+}

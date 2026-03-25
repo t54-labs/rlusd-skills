@@ -1,0 +1,28 @@
+{
+  "name": "rlusd-agent-skills",
+  "owner": {
+    "name": "RLUSD Skills Contributors"
+  },
+  "metadata": {
+    "description": "RLUSD-focused agent skills and a deterministic local CLI.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "ripple",
+      "description": "Route RLUSD tasks across Ethereum and XRPL workflows.",
+      "source": "./plugins/ripple",
+      "strict": false,
+      "skills": [
+        "./skills/use-rlusd",
+        "./skills/buy-redeem-rlusd",
+        "./skills/rlusd-defi-action",
+        "./skills/rlusd-transfer",
+        "./skills/rlusd-trustline",
+        "./skills/use-rlusd-evm-defi",
+        "./skills/use-rlusd-ethereum",
+        "./skills/use-rlusd-xrpl"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "chain": "xrpl-mainnet",
+  "family": "xrpl",
+  "display_name": "XRPL Mainnet",
+  "rpc_url": "https://xrplcluster.com/",
+  "ws_url": "wss://xrplcluster.com"
+}

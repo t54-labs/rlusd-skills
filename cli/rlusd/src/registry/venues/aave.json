@@ -1,0 +1,21 @@
+{
+  "venue": "aave",
+  "chain": "ethereum-mainnet",
+  "capabilities": ["lend", "borrow"],
+  "approval_mode": "approve",
+  "collateral_supported": false,
+  "status": "experimental",
+  "notes": [
+    "Registry-backed preview venue",
+    "No live market data in this batch"
+  ],
+  "preview_swap_quotes": [],
+  "preview_supply": {
+    "asset_symbol": "RLUSD",
+    "reference_supply_apy": "4.2000",
+    "collateral_supported": false,
+    "approval_mode": "approve",
+    "supply_target_reference": "venue:aave:pool",
+    "supply_target_address": "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2"
+  }
+}

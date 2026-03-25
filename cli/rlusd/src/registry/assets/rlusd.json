@@ -1,0 +1,16 @@
+{
+  "symbol": "RLUSD",
+  "name": "Ripple USD",
+  "chains": {
+    "ethereum-mainnet": {
+      "address": "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
+      "address_type": "proxy",
+      "implementation_address": "0x9747a0d261c2d56eb93f542068e5d1e23170fa9e",
+      "decimals": 18
+    },
+    "xrpl-mainnet": {
+      "issuer": "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De",
+      "currency": "RLUSD"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+---
+name: rlusd-defi-action
+description: Execute an explicit RLUSD DeFi workflow using the local CLI, with preview-first guidance and Aave-only supply execution in the current batch.
+---
+
+# Purpose
+
+Use this skill when the user explicitly wants to take a DeFi action with RLUSD,
+not just discover venues or preview routes.
+
+# When To Use This Skill
+
+- The user wants to preview, prepare, or execute an RLUSD DeFi supply flow.
+- The user already reviewed a DeFi plan and now wants to submit it.
+- The user wants a concrete DeFi action path rather than general venue discovery.
+
+# Do Not Use This Skill When
+
+- The task is only about DeFi discovery or swap preview; use
+  `use-rlusd-evm-defi`.
+- The task is about direct Ethereum token transfer/approval or XRPL trust-line
+  and payment flows.
+- The task is about institutional buy/redeem guidance.
+
+# Decision Guide
+
+- Start with `defi venues` to confirm the venue supports the required
+  capability.
+- Use `defi quote swap` only for static preview quotes. Swap execution is not
+  implemented in this batch.
+- For the current Aave-only lending flow, use `defi supply preview`, then
+  `defi supply prepare`, then `defi supply execute` with the reviewed
+  `plan_id`.
+
+# Current Command Sequence
+
+```bash
+rlusd defi venues --chain ethereum-mainnet --capability lend --json
+rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
+rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from wallet:ops --amount 5000 --json
+rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+```
+
+# Common Warnings
+
+- `defi quote swap` and `defi supply preview` are registry-backed previews, not
+  live market reads.
+- The current supply execute path is Aave-only.
+- Aave supply execution submits the stored `approve` step before the stored
+  `supply` step.
+- Mainnet DeFi execution requires explicit confirmation using the prepared
+  `plan_id`.
+
+# Examples
+
+- "Prepare supplying 5000 RLUSD to Aave." -> run `defi supply prepare`
+- "Submit the reviewed Aave supply plan." -> run `defi supply execute`
