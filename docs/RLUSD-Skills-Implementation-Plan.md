@@ -142,7 +142,7 @@ Recommended frontmatter pattern:
 ```yaml
 ---
 name: rlusd-transfer
-description: Prepare and execute an RLUSD transfer using the local CLI.
+description: Prepare and execute an RLUSD transfer using the external `rlusd-cli` runtime.
 disable-model-invocation: true
 ---
 ```
@@ -357,7 +357,7 @@ Every command must:
   "warnings": ["mainnet", "real_funds"],
   "next": [
     {
-      "command": "rlusd evm transfer execute --plan ./plan.json --json"
+      "command": "rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --json"
     }
   ]
 }

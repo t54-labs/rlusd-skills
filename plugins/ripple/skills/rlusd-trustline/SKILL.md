@@ -1,6 +1,6 @@
 ---
 name: rlusd-trustline
-description: Create or update an RLUSD XRPL trust line using the local CLI with explicit prepare, review, execute, and wait steps.
+description: Create or update an RLUSD XRPL trust line using the external rlusd-cli runtime with explicit prepare, review, execute, and wait steps.
 ---
 
 # Purpose

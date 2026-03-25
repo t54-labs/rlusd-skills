@@ -28,6 +28,6 @@ In this repo today:
 
 - if the task is executable today, route to `approve`
 - if the user asks specifically for permit support, explain that it is not yet
-  implemented in the local CLI batch
+  implemented in the external `rlusd-cli` runtime
 - do not imply that a preview quote or DeFi venue automatically supports a live
   permit path

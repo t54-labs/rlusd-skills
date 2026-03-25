@@ -57,7 +57,8 @@ Without a productized guidance layer and deterministic CLI, an AI agent will ten
 
 ## 4. Product Vision
 
-Create the **best agent-facing RLUSD developer toolkit** for local CLI workflows:
+Create the **best agent-facing RLUSD developer toolkit** for external
+`rlusd-cli` workflows:
 
 - **easy to install**,
 - **safe by default**,

@@ -1,6 +1,6 @@
 ---
 name: rlusd-defi-action
-description: Execute an explicit RLUSD DeFi workflow using the local CLI, with preview-first guidance and Aave-only supply execution in the current batch.
+description: Execute an explicit RLUSD DeFi workflow using the external rlusd-cli runtime, with live quote reads and Aave-only supply execution in the current batch.
 ---
 
 # Purpose

@@ -1,6 +1,6 @@
 ---
 name: rlusd-transfer
-description: Execute an explicit RLUSD transfer or payment workflow using the local CLI with prepare, review, execute, and receipt steps.
+description: Execute an explicit RLUSD transfer or payment workflow using the external rlusd-cli runtime with prepare, review, execute, and receipt steps.
 ---
 
 # Purpose
