@@ -1,25 +1,26 @@
 # RLUSD Skills
 
-`rlusd-skills` packages RLUSD-focused agent skills plus a local TypeScript CLI for
-deterministic read, prepare, execute, and receipt workflows across Ethereum and
-XRPL.
+`rlusd-skills` packages RLUSD-focused agent skills and docs. The canonical
+runtime is now the external `rlusd-cli` branch
+`feat/skills-backend-migration`, currently pinned for cutover at `374a1b1`.
 
 ## What Is Implemented
 
 - RLUSD routing skills for Ethereum, XRPL, DeFi, and institutional guidance
-- a local `rlusd` CLI with JSON output for every command
+- an external `rlusd-cli` runtime with JSON output for every command
 - registry-backed RLUSD metadata for Ethereum Mainnet and XRPL Mainnet
-- deterministic prepared-plan files stored under `.rlusd/plans`
+- deterministic prepared-plan files stored under `~/.config/rlusd-cli/plans`
 - EVM read, prepare, execute, wait, and receipt commands
 - XRPL trust-line, payment, wait, and receipt commands
-- DeFi venue discovery, preview quotes, and Aave supply prepare/execute
+- DeFi venue discovery, live swap quotes, and Aave supply prepare/execute
 - fiat onboarding, buy, and redeem guidance commands
 
 ## Current Constraints
 
 - live Sepolia and XRPL Testnet verification is still pending
 - the registry currently ships Ethereum Mainnet and XRPL Mainnet entries only
-- DeFi swap quotes are static preview data, not live market quotes
+- DeFi swap quotes are live and expire on a short TTL
+- DeFi supply preview remains preview-only guidance
 - DeFi supply execution is `aave`-only
 - fiat commands are guidance-only and do not automate Ripple onboarding or wires
 
@@ -40,11 +41,15 @@ Install workspace dependencies:
 pnpm install
 ```
 
-Run the CLI from source:
+Install the external CLI separately:
 
 ```bash
-pnpm --filter rlusd build
-node cli/rlusd/dist/index.js --help
+git clone https://github.com/t54-labs/rlusd-cli.git
+cd rlusd-cli
+git checkout feat/skills-backend-migration
+git rev-parse HEAD   # should match 374a1b1 or a newer approved branch tip
+npm install
+npm run build
 ```
 
 Run the current checks:
@@ -57,46 +62,32 @@ pnpm build
 
 ## Wallet Configuration
 
-Prepared plans are written to `.rlusd/plans`. Execution commands resolve wallet
-aliases from `.rlusd/config.json`.
+Prepared plans, wallet files, and runtime configuration now live under
+`rlusd-cli`:
 
-Example config:
+- plans: `~/.config/rlusd-cli/plans`
+- wallets: `~/.config/rlusd-cli/wallets`
+- config: `~/.config/rlusd-cli/config.yml`
 
-```json
-{
-  "wallets": {
-    "ops": {
-      "chain": "ethereum-mainnet",
-      "address": "0x1234567890123456789012345678901234567890",
-      "signer": "env:OPS_PRIVATE_KEY"
-    },
-    "treasury-xrpl": {
-      "chain": "xrpl-mainnet",
-      "address": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
-      "signer": "env:XRPL_MAINNET_SEED"
-    }
-  }
-}
-```
-
-Execution also requires the chain transport environment variables configured by
-the registry, such as `ETHEREUM_MAINNET_RPC_URL`.
+For write flows, prefer explicit wallet flags such as `--from-wallet`,
+`--owner-wallet`, and `--wallet`, plus `RLUSD_WALLET_PASSWORD` for local wallet
+decryption.
 
 ## Common Flows
 
-Resolve RLUSD metadata:
+Resolve RLUSD metadata with the external CLI:
 
 ```bash
-node cli/rlusd/dist/index.js resolve asset --chain ethereum-mainnet --json
-node cli/rlusd/dist/index.js resolve asset --chain xrpl-mainnet --json
+rlusd resolve asset --chain ethereum-mainnet --symbol RLUSD --json
+rlusd resolve asset --chain xrpl-mainnet --symbol RLUSD --json
 ```
 
 Prepare an EVM transfer:
 
 ```bash
-node cli/rlusd/dist/index.js evm transfer prepare \
+rlusd evm transfer prepare \
   --chain ethereum-mainnet \
-  --from wallet:ops \
+  --from-wallet ops \
   --to 0x1234567890123456789012345678901234567890 \
   --amount 25.5 \
   --json
@@ -105,9 +96,9 @@ node cli/rlusd/dist/index.js evm transfer prepare \
 Prepare an XRPL payment:
 
 ```bash
-node cli/rlusd/dist/index.js xrpl payment prepare \
+rlusd xrpl payment prepare \
   --chain xrpl-mainnet \
-  --from wallet:treasury-xrpl \
+  --from-wallet treasury-xrpl \
   --to rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe \
   --amount 250 \
   --json
@@ -116,16 +107,23 @@ node cli/rlusd/dist/index.js xrpl payment prepare \
 Preview and prepare an Aave supply flow:
 
 ```bash
-node cli/rlusd/dist/index.js defi supply preview \
+rlusd defi supply preview \
   --chain ethereum-mainnet \
   --venue aave \
   --amount 5000 \
   --json
 
-node cli/rlusd/dist/index.js defi supply prepare \
+rlusd defi quote swap \
+  --chain ethereum-mainnet \
+  --from RLUSD \
+  --to USDC \
+  --amount 1000 \
+  --json
+
+rlusd defi supply prepare \
   --chain ethereum-mainnet \
   --venue aave \
-  --from wallet:ops \
+  --from-wallet ops \
   --amount 5000 \
   --json
 ```
@@ -156,4 +154,5 @@ The packaged skills live under `plugins/ripple/skills`:
 
 Each action flow follows the same rule: `prepare` first, review the generated
 plan, then `execute` with an explicit matching `--confirm-plan-id` when
-confirmation is required.
+confirmation is required. For live swap quotes, treat `quoted_at`,
+`ttl_seconds`, and `expires_at` as the source of truth for quote freshness.

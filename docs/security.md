@@ -29,12 +29,13 @@ If any of those fields change, execution fails with
 
 ## Wallet and Signer Controls
 
-Execution depends on `.rlusd/config.json` plus environment-backed signer secrets.
+Execution now depends on `rlusd-cli` local wallet storage plus
+`RLUSD_WALLET_PASSWORD`.
 
-- EVM signing currently supports local private keys via `env:<VAR_NAME>`
-- XRPL signing currently supports local seeds via `env:<VAR_NAME>`
+- wallet files live under `~/.config/rlusd-cli/wallets`
+- plan files live under `~/.config/rlusd-cli/plans`
 - signer material is not stored in prepared plans
-- configured wallet addresses must match the derived signer address exactly
+- explicit wallet flags should be preferred over implicit defaults
 
 This means a malformed alias or mismatched signer secret fails before
 submission.
@@ -44,7 +45,7 @@ submission.
 - RLUSD integrations must use the registry-resolved proxy address, not the
   implementation address
 - EVM plan builders encode standard ERC-20 `transfer` and `approve` calls only
-- transport configuration comes from the registry's `rpc_url_env`
+- transport configuration comes from `rlusd-cli` local config
 - execute flows validate that the loaded plan action matches the command invoked
 
 ## XRPL-Specific Rules
@@ -59,7 +60,7 @@ submission.
 
 ## DeFi-Specific Rules
 
-- DeFi quotes are static registry-backed previews, not live market reads
+- `defi quote swap` is live quote data with expiry metadata
 - DeFi supply execution is multi-step and submits stored `approve` then `supply`
   calls
 - the current supply implementation is `aave`-only
@@ -67,14 +68,14 @@ submission.
 
 Warnings that commonly matter in DeFi flows:
 
-- `not_live_market_data`
+- `quote_expires`
 - `preview_only`
 - `collateral_unsupported`
 
 ## Operational Recommendations
 
-- keep `.rlusd/config.json` out of version control when it contains real wallet
-  addresses and env naming conventions tied to production systems
+- keep `~/.config/rlusd-cli` wallet and config files out of version control when
+  they contain real wallet names or production-specific conventions
 - use dedicated low-value wallets for any initial live usage
 - review `human_summary`, `params`, and low-level `intent` data before any
   execute command

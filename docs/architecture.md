@@ -24,7 +24,8 @@ The skill layer lives under `plugins/ripple/skills`.
 
 ### CLI Layer
 
-The CLI lives under `cli/rlusd/src/index.ts` and exposes these namespaces:
+The canonical CLI now lives in the external `rlusd-cli` repository and exposes
+these namespaces:
 
 - `resolve`
 - `evm`
@@ -42,20 +43,9 @@ Every command supports JSON output and returns a shared envelope shape with:
 - `warnings`
 - `next`
 
-### Registry Layer
-
-The registry lives under `cli/rlusd/src/registry`.
-
-- `chains/` describes chain family and transport configuration
-- `assets/` describes RLUSD metadata per chain
-- `venues/` describes DeFi capabilities and preview-only quote data
-
-At the moment, the bundled registry covers:
-
-- `ethereum-mainnet`
-- `xrpl-mainnet`
-
-The current scope is intentionally mainnet-only.
+`rlusd-skills` no longer treats `cli/rlusd` as the source of truth for runtime
+metadata. This repo's job is to document and route into the external CLI
+surface, while chain, asset, venue, and policy facts live in `rlusd-cli`.
 
 ## Data Flow
 
@@ -66,13 +56,13 @@ Read flows resolve registry metadata first, then call the appropriate adapter.
 Examples:
 
 - `resolve asset` loads chain and asset metadata
-- `evm balance` and `evm allowance` resolve the RLUSD proxy address first
-- `xrpl trustline status` resolves the RLUSD issuer and currency first
+- `evm tx wait` and `evm tx receipt` resolve the reviewed on-chain hash
+- `xrpl trustline status` and `xrpl account info` resolve XRPL issuer/account state
 
 ### Prepare Commands
 
 Prepare flows convert user intent into deterministic plan artifacts stored under
-`.rlusd/plans`.
+`~/.config/rlusd-cli/plans`.
 
 Each plan includes:
 
@@ -120,24 +110,25 @@ commands instead of assuming that submission implies success.
 
 ### DeFi
 
-- venue discovery is registry-backed
-- swap quotes are static reference previews
+- venue discovery is CLI-backed and capability-filtered
+- swap quotes are live quote data with TTL/expiry metadata
 - supply preview/prepare/execute currently support `aave` only
 - DeFi supply execution is a multi-step flow that submits an `approve` step
   before the `supply` step
 
 ## Wallet Model
 
-Wallet aliases are loaded from `.rlusd/config.json`.
+Wallets, plans, and runtime configuration are loaded from `rlusd-cli` local
+storage:
 
-- direct addresses are allowed for read flows and prepare inputs
-- execute flows require a configured wallet alias or a configured address match
-- signer references currently support environment-backed local keys only
+- `~/.config/rlusd-cli/wallets`
+- `~/.config/rlusd-cli/plans`
+- `~/.config/rlusd-cli/config.yml`
 
-Examples:
+Preferred write-path inputs are explicit wallet flags:
 
-- EVM signer env refs: `env:OPS_PRIVATE_KEY`
-- XRPL signer env refs: `env:XRPL_MAINNET_SEED`
+- EVM: `--from-wallet` and `--owner-wallet`
+- XRPL: `--from-wallet` and `--wallet`
 
 ## Safety Model
 
@@ -151,6 +142,6 @@ The architecture intentionally pushes side effects behind reviewable plan files.
 
 ## Known Gaps
 
-- no live DeFi quote adapters yet
+- no live swap execution path yet
 - no dry-run simulator for multi-step DeFi plans yet
 - no multisig or external signer backends yet

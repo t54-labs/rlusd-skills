@@ -8,7 +8,7 @@ execute flow. Use explicit approvals instead.
 Current supported approval path:
 
 ```bash
-rlusd evm approve prepare --chain ethereum-mainnet --owner wallet:ops --spender 0x... --amount 1000 --json
+rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
 rlusd evm approve execute --plan <plan_path> --confirm-plan-id <plan_id> --json
 ```
 

@@ -26,8 +26,8 @@ not just discover venues or preview routes.
 
 - Start with `defi venues` to confirm the venue supports the required
   capability.
-- Use `defi quote swap` only for static preview quotes. Swap execution is not
-  implemented in this batch.
+- Use `defi quote swap` for live quote reads only. Swap execution is not
+  implemented in this repo.
 - For the current Aave-only lending flow, use `defi supply preview`, then
   `defi supply prepare`, then `defi supply execute` with the reviewed
   `plan_id`.
@@ -37,14 +37,14 @@ not just discover venues or preview routes.
 ```bash
 rlusd defi venues --chain ethereum-mainnet --capability lend --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
-rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from wallet:ops --amount 5000 --json
+rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 ```
 
 # Common Warnings
 
-- `defi quote swap` and `defi supply preview` are registry-backed previews, not
-  live market reads.
+- `defi quote swap` is live quote data and should be treated as expiring market
+  data, while `defi supply preview` remains preview-only guidance.
 - The current supply execute path is Aave-only.
 - Aave supply execution submits the stored `approve` step before the stored
   `supply` step.

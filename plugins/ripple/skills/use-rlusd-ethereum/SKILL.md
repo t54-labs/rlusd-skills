@@ -38,11 +38,11 @@ current contract metadata or when the workflow depends on ERC-20 behavior.
 rlusd resolve asset --chain ethereum-mainnet --json
 rlusd evm balance --chain ethereum-mainnet --address 0x... --json
 rlusd evm allowance --chain ethereum-mainnet --owner 0x... --spender 0x... --json
-rlusd evm transfer prepare --chain ethereum-mainnet --from wallet:ops --to 0x... --amount 25.5 --json
+rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
 rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
 rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
-rlusd evm approve prepare --chain ethereum-mainnet --owner wallet:ops --spender 0x... --amount 1000 --json
+rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
 rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 ```
 

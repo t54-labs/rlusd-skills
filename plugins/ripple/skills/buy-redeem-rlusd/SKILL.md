@@ -27,23 +27,24 @@ Ripple's institutional process rather than on-chain token transfers.
 
 - Start with `rlusd fiat onboarding checklist --json` when the user is not yet
   onboarded.
-- Use `rlusd fiat buy instructions --wallet-id <wallet-id> --chain <chain> --json`
-  when the user needs chain-specific funding steps for RLUSD acquisition.
-- Use `rlusd fiat redeem instructions --wallet-id <wallet-id> --amount <amount> --json`
-  when the user needs the redemption process and settlement caveats.
+- Use `rlusd fiat buy instructions --json` when the user needs provider and rail
+  guidance for RLUSD acquisition.
+- Use `rlusd fiat redeem instructions --json` when the user needs the redemption
+  process and settlement caveats.
 
 # Current Command Sequence
 
 ```bash
 rlusd fiat onboarding checklist --json
-rlusd fiat buy instructions --wallet-id wallet-123 --chain xrpl-mainnet --json
-rlusd fiat redeem instructions --wallet-id wallet-123 --amount 10000 --json
+rlusd fiat buy instructions --json
+rlusd fiat redeem instructions --json
 ```
 
 Use the output to confirm:
 
 - the process is clearly marked as manual and institutional,
-- chain-specific prerequisites such as XRPL trust lines are surfaced,
+- chain-specific prerequisites such as XRPL trust lines should be checked
+  separately with the chain skills,
 - and warnings distinguish bank-wire timing from on-chain finality.
 
 # Common Warnings
@@ -57,8 +58,8 @@ Use the output to confirm:
 # Examples
 
 - "How do I onboard to buy RLUSD directly from Ripple?" -> run `rlusd fiat onboarding checklist --json`
-- "What are the steps to buy RLUSD on XRPL with wallet ID wallet-123?" -> run `rlusd fiat buy instructions --wallet-id wallet-123 --chain xrpl-mainnet --json`
-- "What are the steps to redeem 10000 RLUSD?" -> run `rlusd fiat redeem instructions --wallet-id wallet-123 --amount 10000 --json`
+- "What are the steps to buy RLUSD directly from Ripple?" -> run `rlusd fiat buy instructions --json`
+- "What are the steps to redeem RLUSD?" -> run `rlusd fiat redeem instructions --json`
 
 # References
 
