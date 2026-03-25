@@ -6,8 +6,10 @@
 - Successful commands write JSON to stdout
 - Command-level failures write structured JSON to stderr
 - Unexpected CLI failures write structured JSON to stderr when `--json` is present
-- Prepared plans are stored under `.rlusd/plans`
+- Prepared plans are stored under `~/.config/rlusd-cli/plans`
 - Execute commands may require `--confirm-plan-id <plan_id>`
+- Local wallet execution uses `rlusd-cli` wallet storage plus explicit wallet
+  flags such as `--from-wallet`, `--owner-wallet`, and `--wallet`
 
 ## `resolve`
 
@@ -52,7 +54,7 @@ rlusd evm allowance --chain <chain> --owner <address> --spender <address> --json
 Create a deterministic RLUSD transfer plan.
 
 ```bash
-rlusd evm transfer prepare --chain <chain> --from <wallet-or-address> --to <address> --amount <amount> --json
+rlusd evm transfer prepare --chain <chain> --from-wallet <wallet_name> --to <address> --amount <amount> --json
 ```
 
 Returned plan data includes:
@@ -74,7 +76,7 @@ rlusd evm transfer execute --plan <path> [--confirm-plan-id <plan_id>] --json
 Notes:
 
 - loads and validates the stored plan
-- resolves the sender signer from `.rlusd/config.json`
+- resolves the sender wallet from `rlusd-cli` local wallet storage
 - returns the submitted `tx_hash`
 
 ### `evm approve prepare`
@@ -82,7 +84,7 @@ Notes:
 Create a deterministic RLUSD approval plan.
 
 ```bash
-rlusd evm approve prepare --chain <chain> --owner <wallet-or-address> --spender <address> --amount <amount> --json
+rlusd evm approve prepare --chain <chain> --owner-wallet <wallet_name> --spender <address> --amount <amount> --json
 ```
 
 ### `evm approve execute`
@@ -162,7 +164,7 @@ rlusd xrpl account info --chain <chain> --address <r-address> --json
 Create a deterministic RLUSD payment plan.
 
 ```bash
-rlusd xrpl payment prepare --chain <chain> --from <wallet-or-address> --to <r-address> --amount <amount> --json
+rlusd xrpl payment prepare --chain <chain> --from-wallet <wallet_name> --to <r-address> --amount <amount> --json
 ```
 
 Notes:
@@ -223,7 +225,7 @@ Notes:
 
 ### `defi quote swap`
 
-Preview a registry-backed RLUSD swap quote.
+Read a live RLUSD swap quote with expiry metadata.
 
 ```bash
 rlusd defi quote swap --chain <chain> --from RLUSD --to USDC --amount <amount> --json
@@ -232,16 +234,16 @@ rlusd defi quote swap --chain <chain> --from RLUSD --to USDC --amount <amount> -
 Returns:
 
 - selected `route.venue`
-- `pricing_source = reference_preview`
-- `rate`
+- `pricing_source = live_quote`
 - `amount_out`
 - `fee_bps`
-- `considered_venues`
+- `quoted_at`
+- `ttl_seconds`
+- `expires_at`
 
 Warnings:
 
-- `not_live_market_data`
-- `preview_only`
+- `quote_expires`
 
 ### `defi supply preview`
 
@@ -258,7 +260,7 @@ Warnings may include `collateral_unsupported`.
 Create a deterministic DeFi supply plan.
 
 ```bash
-rlusd defi supply prepare --chain <chain> --venue <venue> --from <wallet-or-address> --amount <amount> --json
+rlusd defi supply prepare --chain <chain> --venue <venue> --from-wallet <wallet_name> --amount <amount> --json
 ```
 
 Current behavior:
@@ -290,23 +292,23 @@ rlusd fiat onboarding checklist --json
 
 ### `fiat buy instructions`
 
-Print parameterized buy instructions for a Ripple wallet ID and chain.
+Print provider and rail guidance for buying RLUSD.
 
 ```bash
-rlusd fiat buy instructions --wallet-id <wallet_id> --chain <chain> --json
+rlusd fiat buy instructions --json
 ```
 
 Notes:
 
-- XRPL flows add a trust-line prerequisite warning
+- use the chain-specific skills to validate wallet and trust-line prerequisites
 - the command is guidance-only and does not submit anything
 
 ### `fiat redeem instructions`
 
-Print parameterized redemption guidance.
+Print provider and settlement guidance for redeeming RLUSD.
 
 ```bash
-rlusd fiat redeem instructions --wallet-id <wallet_id> --amount <amount> --json
+rlusd fiat redeem instructions --json
 ```
 
 ## Current Supported Chain Keys

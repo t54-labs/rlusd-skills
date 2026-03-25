@@ -20,19 +20,19 @@ What to do:
 
 Symptom:
 
-- execute commands fail because a wallet alias is not configured
+- execute commands fail because a local wallet name is not configured
 
 Cause:
 
-- `.rlusd/config.json` is missing
-- the alias does not exist
-- the alias is configured for a different chain
+- `rlusd-cli` wallet/config storage is missing
+- the named wallet does not exist
+- the wallet is configured for a different chain
 
 What to do:
 
-- create `.rlusd/config.json`
-- verify the alias name after `wallet:`
-- make sure the alias `chain` matches the command's `--chain`
+- verify the named wallet after `--from-wallet`, `--owner-wallet`, or `--wallet`
+- make sure the wallet `chain` matches the command's `--chain`
+- confirm `RLUSD_WALLET_PASSWORD` is set when the command decrypts a local wallet
 
 ## Missing Environment Variables
 
@@ -43,7 +43,7 @@ Symptom:
 Common examples:
 
 - `ETHEREUM_MAINNET_RPC_URL`
-- the signer env var referenced in `.rlusd/config.json`
+- the signer secret or wallet file expected by `rlusd-cli`
 
 What to do:
 
@@ -120,7 +120,7 @@ Symptom:
 
 Cause:
 
-- there is no registry-backed preview quote for that pair on the selected chain
+- the external CLI could not produce a supported live quote for that pair
 
 What to do:
 
@@ -145,7 +145,7 @@ What to do:
 
 - inspect `rlusd defi venues --chain ethereum-mainnet --json`
 - use `aave` for the current lend/supply path
-- use `curve` or `uniswap` only for preview swap discovery
+- use the reported quote freshness fields before relying on a swap quote
 
 ## Invalid Address or Hash
 

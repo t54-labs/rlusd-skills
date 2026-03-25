@@ -5,115 +5,96 @@
 
 ## Summary
 
-The repository now has a working TypeScript CLI, registry-backed chain and venue
-data, eight skill files, deterministic plan storage, EVM and XRPL execution
-flows, DeFi preview/supply flows, and institutional guidance commands.
+The repository now has eight RLUSD skill files, supporting reference material,
+and repo docs retargeted to the external `rlusd-cli` runtime.
 
-The current documented scope is mainnet-only. Sepolia/XRPL Testnet support and
-live testnet demo work are not tracked for now.
+The external CLI branch currently targeted for cutover is
+`feat/skills-backend-migration` at pinned commit `374a1b1`.
 
-The biggest remaining gap is:
-
-- broader post-v1 expansion work around richer DeFi, signer, and adapter
-  capabilities.
+The biggest remaining gap is now on the release side: pushing, reviewing, and
+landing the cutover branch once final docs QA is accepted.
 
 ## Phase Status
 
 ### Phase 0
 
-Status: complete
+Status: complete for skills/docs scope
 
 Implemented:
 
-- monorepo/workspace scaffold
 - plugin marketplace metadata
-- CLI package scaffold
-- registry loading
-- shared JSON envelope schemas
-- test harness
+- skill packaging scaffold
+- docs and references that route into `rlusd-cli`
 
 ### Phase 1
 
-Status: complete
+Status: complete for the skills/docs cutover
 
 Implemented:
 
 - `use-rlusd`
 - `use-rlusd-ethereum`
 - `use-rlusd-xrpl`
-- `resolve asset`
-- `evm balance`
-- `evm allowance`
-- `xrpl trustline status`
-- `xrpl account info`
+- external `resolve asset` routing
+- external `evm balance`
+- external `evm allowance`
+- external `xrpl trustline status`
+- external `xrpl account info`
 
 ### Phase 2
 
-Status: complete
+Status: complete for the skills/docs cutover
 
 Implemented:
 
-- deterministic plan schema and file-backed storage
-- `evm transfer prepare`
-- `evm approve prepare`
-- `xrpl trustline prepare`
-- `xrpl payment prepare`
-- warnings and confirmation policy inputs
+- external `prepare` flows for EVM and XRPL
+- warnings and confirmation policy documentation
 
 ### Phase 3
 
-Status: complete for current mainnet-only scope
+Status: complete for the skills/docs cutover
 
 Implemented:
 
-- signer abstraction
-- `evm transfer execute`
-- `evm approve execute`
-- `xrpl trustline execute`
-- `xrpl payment execute`
-- `evm tx wait`
-- `evm tx receipt`
-- `xrpl tx wait`
-- `xrpl payment receipt`
-- confirmation policy enforcement
+- external execute/wait/receipt flows for EVM and XRPL
+- confirmation policy enforcement documentation
 
 ### Phase 4
 
-Status: complete
+Status: complete for the skills/docs cutover
 
 Implemented:
 
 - `use-rlusd-evm-defi`
-- `defi venues`
-- `defi quote swap`
-- `defi supply preview`
-- `defi supply prepare`
-- `defi supply execute`
-- venue registry and capability flags
+- external `defi venues`
+- external `defi quote swap`
+- external `defi supply preview`
+- external `defi supply prepare`
+- external `defi supply execute`
 
 Current scope notes:
 
-- swap quotes are static preview-only
+- swap quotes are live and time-limited
 - supply flow is `aave`-only
-- `defi supply execute` submits stored `approve` then `supply` steps
+- `defi supply execute` remains a reviewed multi-step `approve` then `supply` flow
 
 Still missing or narrowed:
 
 - no borrow preview
 - no LP/vault preview
 - no richer multi-venue lending abstraction
-- no live quote adapters
+- no swap execution path in the skills repo itself
 
 ### Phase 5
 
-Status: complete
+Status: complete for the skills/docs cutover
 
 Implemented:
 
 - `buy-redeem-rlusd`
-- `fiat onboarding checklist`
-- `fiat buy instructions`
-- `fiat redeem instructions`
+- external `fiat onboarding checklist`
+- external `fiat buy instructions`
+- external `fiat redeem instructions`
 - `README.md`
 - `docs/architecture.md`
 - `docs/command-reference.md`
@@ -147,43 +128,43 @@ Important note:
 
 ### `resolve`
 
-- `resolve asset`
+- external `resolve asset`
 
 ### `evm`
 
-- `evm balance`
-- `evm allowance`
-- `evm transfer prepare`
-- `evm transfer execute`
-- `evm approve prepare`
-- `evm approve execute`
-- `evm tx wait`
-- `evm tx receipt`
+- external `evm balance`
+- external `evm allowance`
+- external `evm transfer prepare`
+- external `evm transfer execute`
+- external `evm approve prepare`
+- external `evm approve execute`
+- external `evm tx wait`
+- external `evm tx receipt`
 
 ### `xrpl`
 
-- `xrpl trustline status`
-- `xrpl trustline prepare`
-- `xrpl trustline execute`
-- `xrpl account info`
-- `xrpl payment prepare`
-- `xrpl payment execute`
-- `xrpl tx wait`
-- `xrpl payment receipt`
+- external `xrpl trustline status`
+- external `xrpl trustline prepare`
+- external `xrpl trustline execute`
+- external `xrpl account info`
+- external `xrpl payment prepare`
+- external `xrpl payment execute`
+- external `xrpl tx wait`
+- external `xrpl payment receipt`
 
 ### `defi`
 
-- `defi venues`
-- `defi quote swap`
-- `defi supply preview`
-- `defi supply prepare`
-- `defi supply execute`
+- external `defi venues`
+- external `defi quote swap`
+- external `defi supply preview`
+- external `defi supply prepare`
+- external `defi supply execute`
 
 ### `fiat`
 
-- `fiat onboarding checklist`
-- `fiat buy instructions`
-- `fiat redeem instructions`
+- external `fiat onboarding checklist`
+- external `fiat buy instructions`
+- external `fiat redeem instructions`
 
 ## Recently Completed
 
@@ -218,34 +199,28 @@ Completed in repo:
 
 ### Product Scope Still Narrowed
 
-- DeFi swap quotes are registry-backed preview data, not live market data
+- DeFi swap execution is not implemented in the skills repo
 - DeFi supply is `aave`-only
 - DeFi borrow/LP/vault flows are not implemented
 - fiat commands are guidance-only and do not automate wires or onboarding
 
 ### Backlog Still Open
 
-- more EVM chains as RLUSD support expands
-- richer DeFi venue integrations
-- multisig / external signer adapters
-- policy plug-ins for spending limits and allowlists
-- optional MCP adapter
-- dry-run simulation for multi-step DeFi actions
+- push and review the `rlusd-skills` cutover branch
+- create the matching PR after final QA is accepted
 
 ## Verification Snapshot
 
 Most recently verified state before this doc was written:
 
-- `pnpm test` passing
-- `pnpm typecheck` passing
-- `pnpm build` passing
+- `rlusd-cli` branch `feat/skills-backend-migration` pushed and synced with latest `origin/main`
+- pinned cutover commit available: `374a1b1`
+- `pnpm install` passed
+- `pnpm test` passed
+- `pnpm typecheck` passed
 
-The codebase currently has working automated coverage for:
+Important note:
 
-- registry loading and resolution
-- read commands
-- prepare commands
-- execute commands
-- wait/receipt commands
-- DeFi preview and Aave supply flow
-- fiat guidance commands
+- this repo is now skills/docs-only
+- runtime command execution coverage lives in the external `rlusd-cli` repository
+- root `pnpm test`, `pnpm typecheck`, and `pnpm build` validate the reduced workspace shape, not an in-repo CLI runtime

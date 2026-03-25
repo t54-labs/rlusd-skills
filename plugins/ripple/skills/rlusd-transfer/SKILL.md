@@ -1,6 +1,6 @@
 ---
 name: rlusd-transfer
-description: Execute an explicit RLUSD transfer or payment workflow using the local CLI with prepare, review, execute, and receipt steps.
+description: Execute an explicit RLUSD transfer or payment workflow using the external rlusd-cli runtime with prepare, review, execute, and receipt steps.
 ---
 
 # Purpose
@@ -35,16 +35,16 @@ through the action workflow rather than just inspect metadata or balances.
 # Current Command Sequence
 
 ```bash
-rlusd evm transfer prepare --chain ethereum-mainnet --from wallet:ops --to 0x... --amount 25.5 --json
+rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
 rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
 
-rlusd evm approve prepare --chain ethereum-mainnet --owner wallet:ops --spender 0x... --amount 1000 --json
+rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
 rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
 
-rlusd xrpl payment prepare --chain xrpl-mainnet --from wallet:ops --to r... --amount 250 --json
-rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
+rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 ```

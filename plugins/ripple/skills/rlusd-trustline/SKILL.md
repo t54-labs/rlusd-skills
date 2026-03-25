@@ -1,6 +1,6 @@
 ---
 name: rlusd-trustline
-description: Create or update an RLUSD XRPL trust line using the local CLI with explicit prepare, review, execute, and wait steps.
+description: Create or update an RLUSD XRPL trust line using the external rlusd-cli runtime with explicit prepare, review, execute, and wait steps.
 ---
 
 # Purpose
@@ -35,7 +35,7 @@ line on XRPL.
 ```bash
 rlusd xrpl trustline status --chain xrpl-mainnet --address r... --json
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 ```
 

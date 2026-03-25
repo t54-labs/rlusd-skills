@@ -17,16 +17,17 @@ rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1
 
 Current quote behavior:
 
-- the CLI inspects venues advertising `swap`
-- it selects the route with the best computed preview output
-- output is derived from registry `reference_rate` data, not live market reads
-- the result includes the selected route plus `considered_venues`
+- the CLI inspects a live Uniswap quote path for the requested RLUSD pair
+- the result includes freshness metadata: `quoted_at`, `ttl_seconds`, and
+  `expires_at`
+- quote output should be treated as expiring market data rather than static
+  preview data
 
 ## Supply Routing
 
 ```bash
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
-rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from wallet:ops --amount 5000 --json
+rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 ```
 
 Current supply routing is narrow:

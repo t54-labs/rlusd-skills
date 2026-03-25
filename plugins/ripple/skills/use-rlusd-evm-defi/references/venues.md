@@ -17,14 +17,14 @@ Current bundled venue metadata:
 - `curve`
   - capabilities: `swap`, `lp`
   - approval mode: `approve`
-  - static preview quote for `RLUSD -> USDC`
+  - discovery-only in the current top-level DeFi surface
 - `uniswap`
   - capabilities: `swap`, `lp`
-  - approval mode: `approve_or_permit`
-  - static preview quote for `RLUSD -> USDC`
+  - approval mode: `approve`
+  - current live quote source for `defi quote swap`
 
 ## Important Limits
 
 - venue metadata is curated registry data, not a live protocol crawl
-- preview-only venue presence does not imply execution support
+- live quote support does not imply swap execution support
 - Aave is the only current DeFi action venue with prepare/execute support

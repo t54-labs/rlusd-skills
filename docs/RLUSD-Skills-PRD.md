@@ -6,10 +6,10 @@
 
 ## 1. Executive Summary
 
-Build an open-source **RLUSD skills + CLI toolkit** that mirrors the useful parts of Circle's skills repository, but is focused on Ripple USD (RLUSD) and optimized for **AI-agent-driven usage from a local CLI** rather than MCP. The product should give an AI coding agent two things:
+Build an open-source **RLUSD skills toolkit** that mirrors the useful parts of Circle's skills repository, but is focused on Ripple USD (RLUSD) and optimized for **AI-agent-driven usage with an external `rlusd-cli` runtime** rather than MCP. The product should give an AI coding agent two things:
 
 1. **Decision guidance** via Claude-style skills (`SKILL.md` files) for when to use RLUSD on Ethereum, XRPL, or in EVM DeFi workflows.
-2. **Deterministic execution** via a local `rlusd` CLI that provides structured, machine-readable commands for read actions, transaction planning, execution, and receipts.
+2. **Deterministic execution** via the external `rlusd-cli` that provides structured, machine-readable commands for read actions, transaction planning, execution, and receipts.
 
 The first release should cover:
 
@@ -57,7 +57,8 @@ Without a productized guidance layer and deterministic CLI, an AI agent will ten
 
 ## 4. Product Vision
 
-Create the **best agent-facing RLUSD developer toolkit** for local CLI workflows:
+Create the **best agent-facing RLUSD developer toolkit** for external
+`rlusd-cli` workflows:
 
 - **easy to install**,
 - **safe by default**,
@@ -153,7 +154,7 @@ A developer who wants Claude Code or a similar AI agent to inspect balances, pla
 
 #### CLI
 
-A local `rlusd` CLI supporting:
+An external `rlusd-cli` runtime supporting:
 
 - `resolve`
 - `read`/`status`/`quote`/`preview`
@@ -360,7 +361,8 @@ It should log enough metadata for an operator to reconstruct what an AI agent pl
 
 1. The first implementation targets local development and operator-assisted execution.
 2. Ethereum and XRPL are the only mandatory chains for v1 because those are Ripple's current documented RLUSD networks.[6][7][8]
-3. DeFi support in v1 is venue-agnostic and preview-first.
+3. DeFi support in v1 is venue-agnostic, with live quote reads and preview-first
+   execution planning.
 4. Skills are authored for Claude-style plugin loading but should remain readable in any markdown-aware agent environment.
 
 ## 16. Release Criteria

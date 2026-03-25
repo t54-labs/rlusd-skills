@@ -1,17 +1,17 @@
 # Ripple RLUSD Skills
 
-This plugin packages RLUSD-focused routing skills and a local `rlusd` CLI for
-AI-agent-driven workflows.
+This plugin packages RLUSD-focused routing skills that target the external
+`rlusd-cli` runtime for AI-agent-driven workflows.
 
 The first implementation slice includes:
 
 - background routing via `use-rlusd`,
 - Ethereum-specific RLUSD guidance,
 - XRPL-specific RLUSD guidance,
-- EVM DeFi venue and swap-preview guidance,
+- EVM DeFi venue and live swap-quote guidance,
 - institutional buy/redeem guidance,
 - explicit action skills for transfer, trust-line, and DeFi workflows,
-- the registry-backed `rlusd resolve asset --json` command,
+- the external `rlusd resolve asset --json` command,
 - `rlusd defi venues` and `rlusd defi quote swap`,
 - `rlusd defi supply preview` and `rlusd defi supply prepare`,
 - `rlusd defi supply execute`,
@@ -27,5 +27,6 @@ The first implementation slice includes:
 - and `rlusd fiat onboarding checklist`, `rlusd fiat buy instructions`, and
   `rlusd fiat redeem instructions`.
 
-The CLI and skill surface will expand in later phases to cover deeper
-production hardening.
+The skills now assume `rlusd-cli` is installed separately and pinned to commit
+`374a1b1` on `feat/skills-backend-migration` unless the rollout plan explicitly
+updates that checkpoint.

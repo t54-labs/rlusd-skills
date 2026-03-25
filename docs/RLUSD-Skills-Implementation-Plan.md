@@ -10,7 +10,7 @@
 Implement the product in **three layers**:
 
 1. **Skill layer** — markdown playbooks that teach the agent how to classify RLUSD tasks and which command sequence to run.
-2. **CLI layer** — deterministic local commands with JSON output and an explicit transaction lifecycle.
+2. **External CLI layer** — deterministic `rlusd-cli` commands with JSON output and an explicit transaction lifecycle.
 3. **Registry / adapter layer** — the source of changing runtime truth such as contract addresses, issuer accounts, supported venues, and policy thresholds.
 
 This split is deliberate:
@@ -142,7 +142,7 @@ Recommended frontmatter pattern:
 ```yaml
 ---
 name: rlusd-transfer
-description: Prepare and execute an RLUSD transfer using the local CLI.
+description: Prepare and execute an RLUSD transfer using the external `rlusd-cli` runtime.
 disable-model-invocation: true
 ---
 ```
@@ -247,8 +247,6 @@ rlusd config ...
 ```bash
 rlusd resolve asset --chain ethereum-mainnet --json
 rlusd resolve asset --chain xrpl-mainnet --json
-rlusd resolve venue --chain ethereum-mainnet --venue aave --json
-rlusd resolve policy --json
 ```
 
 #### EVM Read Path
@@ -262,11 +260,10 @@ rlusd evm tx receipt --hash 0x... --json
 #### EVM Write Path
 
 ```bash
-rlusd evm transfer prepare --chain ethereum-mainnet --from wallet:ops --to 0x... --amount 25.5 --json
-rlusd evm transfer execute --plan ./plan.json --json
-rlusd evm approve prepare --chain ethereum-mainnet --owner wallet:ops --spender 0x... --amount 1000 --json
-rlusd evm approve execute --plan ./plan.json --json
-rlusd evm permit build --chain ethereum-mainnet --owner wallet:ops --spender 0x... --amount 1000 --json
+rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
+rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
+rlusd evm approve execute --plan <plan_path> --confirm-plan-id <plan_id> --json
 rlusd evm tx wait --hash 0x... --json
 ```
 
@@ -282,9 +279,9 @@ rlusd xrpl payment receipt --hash <txid> --json
 
 ```bash
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan ./plan.json --json
-rlusd xrpl payment prepare --chain xrpl-mainnet --from wallet:ops --to r... --amount 250 --json
-rlusd xrpl payment execute --plan ./plan.json --json
+rlusd xrpl trustline execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet treasury-xrpl --json
+rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
+rlusd xrpl payment execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet treasury-xrpl --json
 rlusd xrpl tx wait --hash <txid> --json
 ```
 
@@ -294,16 +291,16 @@ rlusd xrpl tx wait --hash <txid> --json
 rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json
 rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
-rlusd defi supply prepare --chain ethereum-mainnet --venue aave --amount 5000 --json
-rlusd defi supply execute --plan ./plan.json --json
+rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
+rlusd defi supply execute --plan <plan_path> --confirm-plan-id <plan_id> --json
 ```
 
 #### Fiat / Institutional Guidance
 
 ```bash
 rlusd fiat onboarding checklist --json
-rlusd fiat buy instructions --wallet-id <wallet-id> --chain xrpl-mainnet --json
-rlusd fiat redeem instructions --wallet-id <wallet-id> --amount 10000 --json
+rlusd fiat buy instructions --json
+rlusd fiat redeem instructions --json
 ```
 
 The `fiat` namespace is intentionally guidance-oriented in v1 because Ripple's current public flow depends on UI onboarding, approved bank accounts, and bank wires.[10][11][12]
@@ -344,7 +341,7 @@ Every command must:
     "plan_id": "plan_01H...",
     "action": "evm.transfer",
     "requires_confirmation": true,
-    "human_summary": "Transfer 25.5 RLUSD from wallet:ops to 0xabc... on Ethereum Mainnet",
+    "human_summary": "Transfer 25.5 RLUSD from ops to 0xabc... on Ethereum Mainnet",
     "asset": {
       "symbol": "RLUSD",
       "address": "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
@@ -352,7 +349,7 @@ Every command must:
       "decimals": 18
     },
     "params": {
-      "from": "wallet:ops",
+      "from": "ops",
       "to": "0xabc...",
       "amount": "25.5"
     }
@@ -360,7 +357,7 @@ Every command must:
   "warnings": ["mainnet", "real_funds"],
   "next": [
     {
-      "command": "rlusd evm transfer execute --plan ./plan.json --json"
+      "command": "rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --json"
     }
   ]
 }
@@ -522,9 +519,11 @@ Support three signing modes:
 
 ### 9.2 Wallet Alias Resolution
 
-Support aliases like `wallet:ops`, `wallet:treasury`, `wallet:treasury-xrpl`.
+Prefer explicit wallet flags like `--from-wallet`, `--owner-wallet`, and
+`--wallet`.
 
-Define them in local config:
+In the old embedded CLI this lived in local config. In the current cutover the
+runtime source of truth is the external `rlusd-cli` wallet/config storage:
 
 ```json
 {
@@ -542,6 +541,9 @@ Define them in local config:
   }
 }
 ```
+
+That historical shape is still useful context, but the active repository no
+longer ships the runtime that reads it.
 
 ### 9.3 Safety Rules
 

@@ -45,7 +45,7 @@ task belongs to Ethereum or XRPL.
 # Current Command Sequence
 
 1. Resolve RLUSD metadata for the intended chain.
-2. For Ethereum DeFi discovery, swap previews, and Aave supply preview/prepare/execute,
+2. For Ethereum DeFi discovery, live swap quotes, and Aave supply preview/prepare/execute,
    use the `defi` namespace.
 3. For Ethereum reads, use the `evm` namespace.
 4. For Ethereum planning, use the `prepare` commands first and only call `execute`
@@ -62,28 +62,28 @@ rlusd resolve asset --chain ethereum-mainnet --json
 rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json
 rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
-rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from wallet:ops --amount 5000 --json
+rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 rlusd evm balance --chain ethereum-mainnet --address 0x... --json
 rlusd evm allowance --chain ethereum-mainnet --owner 0x... --spender 0x... --json
-rlusd evm transfer prepare --chain ethereum-mainnet --from wallet:ops --to 0x... --amount 25.5 --json
+rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
 rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
 rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
-rlusd evm approve prepare --chain ethereum-mainnet --owner wallet:ops --spender 0x... --amount 1000 --json
+rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
 rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 rlusd resolve asset --chain xrpl-mainnet --json
 rlusd xrpl trustline status --chain xrpl-mainnet --address r... --json
 rlusd xrpl account info --chain xrpl-mainnet --address r... --json
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
-rlusd xrpl payment prepare --chain xrpl-mainnet --from wallet:ops --to r... --amount 250 --json
-rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
+rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
+rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 rlusd fiat onboarding checklist --json
-rlusd fiat buy instructions --wallet-id wallet-123 --chain xrpl-mainnet --json
-rlusd fiat redeem instructions --wallet-id wallet-123 --amount 10000 --json
+rlusd fiat buy instructions --json
+rlusd fiat redeem instructions --json
 ```
 
 # Common Warnings
@@ -92,6 +92,8 @@ rlusd fiat redeem instructions --wallet-id wallet-123 --amount 10000 --json
 - Ethereum RLUSD must use the proxy contract, not the implementation contract.
 - XRPL flows depend on issuer and trust-line semantics and should not be treated
   like ERC-20 transfers.
+- `defi quote swap` is live quote data and should be described with quote
+  freshness metadata such as `quoted_at`, `ttl_seconds`, and `expires_at`.
 - If a requested chain is missing from the registry, fail clearly and extend the
   registry instead of inventing runtime values.
 
