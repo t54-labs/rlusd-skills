@@ -10,19 +10,8 @@
   "plugins": [
     {
       "name": "ripple",
-      "description": "Route RLUSD tasks across Ethereum and XRPL workflows.",
-      "source": "./plugins/ripple",
-      "strict": false,
-      "skills": [
-        "./skills/use-rlusd",
-        "./skills/buy-redeem-rlusd",
-        "./skills/rlusd-defi-action",
-        "./skills/rlusd-transfer",
-        "./skills/rlusd-trustline",
-        "./skills/use-rlusd-evm-defi",
-        "./skills/use-rlusd-ethereum",
-        "./skills/use-rlusd-xrpl"
-      ]
+      "description": "RLUSD-focused agent skills for Ethereum, XRPL, DeFi, and institutional workflows using the external rlusd-cli runtime.",
+      "source": "./"
     }
   ]
 }

@@ -24,21 +24,38 @@ runtime is now the external `rlusd-cli` branch
 - DeFi supply execution is `aave`-only
 - fiat commands are guidance-only and do not automate Ripple onboarding or wires
 
+## Installation
+
+In Claude Code:
+
+```
+/plugin marketplace add t54-labs/rlusd-skills
+/plugin install ripple@rlusd-agent-skills
+```
+
+Alternative: install from a local clone
+
+```
+git clone https://github.com/t54-labs/rlusd-skills.git
+/plugin marketplace add ./rlusd-skills
+/plugin install ripple@rlusd-agent-skills
+```
+
+Or test locally during development:
+
+```bash
+claude --plugin-dir ./rlusd-skills
+```
+
 ## Repository Layout
 
 ```text
-.claude-plugin/          Plugin marketplace metadata
+.claude-plugin/          Plugin manifest and marketplace metadata
+skills/                  Agent skill definitions (SKILL.md files)
 docs/                    Architecture, examples, reference, and status docs
-plugins/ripple/          Skill files and plugin README
 ```
 
-## Quick Start
-
-Install workspace dependencies:
-
-```bash
-pnpm install
-```
+## Prerequisites
 
 Install the external CLI separately:
 
@@ -51,16 +68,7 @@ npm install
 npm run build
 ```
 
-Run the current workspace sanity checks:
-
-```bash
-pnpm test
-pnpm typecheck
-pnpm build
-```
-
-These root commands validate the skills/docs-only workspace shape. Runtime
-behavior is verified in the external `rlusd-cli` repository.
+Runtime behavior is verified in the external `rlusd-cli` repository.
 
 ## Wallet Configuration
 
@@ -141,18 +149,18 @@ rlusd defi supply prepare \
 - `docs/troubleshooting.md`
 - `docs/IMPLEMENTATION-STATUS.md`
 
-## Plugin Surface
+## Skills
 
-The packaged skills live under `plugins/ripple/skills`:
-
-- `use-rlusd`
-- `use-rlusd-ethereum`
-- `use-rlusd-xrpl`
-- `use-rlusd-evm-defi`
-- `buy-redeem-rlusd`
-- `rlusd-transfer`
-- `rlusd-trustline`
-- `rlusd-defi-action`
+| Skill | Command | When to use |
+| :--- | :--- | :--- |
+| **use-rlusd** | (auto-routed) | Route RLUSD requests to the correct chain workflow |
+| **use-rlusd-ethereum** | `/ripple:use-rlusd-ethereum` | Ethereum-specific RLUSD guidance |
+| **use-rlusd-xrpl** | `/ripple:use-rlusd-xrpl` | XRPL-specific RLUSD guidance |
+| **use-rlusd-evm-defi** | `/ripple:use-rlusd-evm-defi` | EVM DeFi venue discovery and swap quotes |
+| **buy-redeem-rlusd** | `/ripple:buy-redeem-rlusd` | Institutional buy/redeem guidance |
+| **rlusd-transfer** | `/ripple:rlusd-transfer` | Execute RLUSD transfers and payments |
+| **rlusd-trustline** | `/ripple:rlusd-trustline` | XRPL trust-line creation and updates |
+| **rlusd-defi-action** | `/ripple:rlusd-defi-action` | Execute RLUSD DeFi supply flows |
 
 Each action flow follows the same rule: `prepare` first, review the generated
 plan, then `execute` with an explicit matching `--confirm-plan-id` when
