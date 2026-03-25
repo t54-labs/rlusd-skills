@@ -5,7 +5,7 @@
 The RLUSD toolkit is split into three layers:
 
 1. skills that route prompts and teach workflow semantics
-2. a local CLI that exposes deterministic JSON commands
+2. an external CLI that exposes deterministic JSON commands
 3. a registry that holds changing chain, asset, venue, and policy metadata
 
 This keeps operational facts out of the skill prose while preserving a stable

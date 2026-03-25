@@ -4,7 +4,7 @@
     "name": "RLUSD Skills Contributors"
   },
   "metadata": {
-    "description": "RLUSD-focused agent skills and a deterministic local CLI.",
+    "description": "RLUSD-focused agent skills that target the external rlusd-cli runtime.",
     "version": "0.1.0"
   },
   "plugins": [

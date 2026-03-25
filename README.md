@@ -46,18 +46,21 @@ Install the external CLI separately:
 git clone https://github.com/t54-labs/rlusd-cli.git
 cd rlusd-cli
 git checkout feat/skills-backend-migration
-git rev-parse HEAD   # should match 374a1b1 or a newer approved branch tip
+git rev-parse HEAD   # should match 374a1b1 unless the cutover plan explicitly updates the pin
 npm install
 npm run build
 ```
 
-Run the current checks:
+Run the current workspace sanity checks:
 
 ```bash
 pnpm test
 pnpm typecheck
 pnpm build
 ```
+
+These root commands validate the skills/docs-only workspace shape. Runtime
+behavior is verified in the external `rlusd-cli` repository.
 
 ## Wallet Configuration
 

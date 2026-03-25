@@ -11,9 +11,8 @@ and repo docs retargeted to the external `rlusd-cli` runtime.
 The external CLI branch currently targeted for cutover is
 `feat/skills-backend-migration` at pinned commit `374a1b1`.
 
-The biggest remaining gap is:
-
-- final repo-level validation after removing the embedded CLI package.
+The biggest remaining gap is now on the release side: pushing, reviewing, and
+landing the cutover branch once final docs QA is accepted.
 
 ## Phase Status
 
@@ -29,7 +28,7 @@ Implemented:
 
 ### Phase 1
 
-Status: in progress during CLI cutover
+Status: complete for the skills/docs cutover
 
 Implemented:
 
@@ -44,7 +43,7 @@ Implemented:
 
 ### Phase 2
 
-Status: in progress during CLI cutover
+Status: complete for the skills/docs cutover
 
 Implemented:
 
@@ -53,7 +52,7 @@ Implemented:
 
 ### Phase 3
 
-Status: in progress during CLI cutover
+Status: complete for the skills/docs cutover
 
 Implemented:
 
@@ -62,7 +61,7 @@ Implemented:
 
 ### Phase 4
 
-Status: in progress during CLI cutover
+Status: complete for the skills/docs cutover
 
 Implemented:
 
@@ -84,11 +83,11 @@ Still missing or narrowed:
 - no borrow preview
 - no LP/vault preview
 - no richer multi-venue lending abstraction
-- no live quote adapters
+- no swap execution path in the skills repo itself
 
 ### Phase 5
 
-Status: in progress during CLI cutover
+Status: complete for the skills/docs cutover
 
 Implemented:
 
@@ -200,31 +199,28 @@ Completed in repo:
 
 ### Product Scope Still Narrowed
 
-- DeFi swap quotes are registry-backed preview data, not live market data
+- DeFi swap execution is not implemented in the skills repo
 - DeFi supply is `aave`-only
 - DeFi borrow/LP/vault flows are not implemented
 - fiat commands are guidance-only and do not automate wires or onboarding
 
 ### Backlog Still Open
 
-- finish the broad examples/planning-doc rewrite
-- embedded `cli/rlusd` package removal and workspace cleanup
-- run final repo QA after workspace cleanup
+- push and review the `rlusd-skills` cutover branch
+- create the matching PR after final QA is accepted
 
 ## Verification Snapshot
 
 Most recently verified state before this doc was written:
 
-- `rlusd-cli` branch `feat/skills-backend-migration` pushed
+- `rlusd-cli` branch `feat/skills-backend-migration` pushed and synced with latest `origin/main`
 - pinned cutover commit available: `374a1b1`
-- remaining verification is on the `rlusd-skills` side after cutover edits
+- `pnpm install` passed
+- `pnpm test` passed
+- `pnpm typecheck` passed
 
-The codebase currently has working automated coverage for:
+Important note:
 
-- registry loading and resolution
-- read commands
-- prepare commands
-- execute commands
-- wait/receipt commands
-- DeFi preview and Aave supply flow
-- fiat guidance commands
+- this repo is now skills/docs-only
+- runtime command execution coverage lives in the external `rlusd-cli` repository
+- root `pnpm test`, `pnpm typecheck`, and `pnpm build` validate the reduced workspace shape, not an in-repo CLI runtime
