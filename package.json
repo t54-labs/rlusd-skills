@@ -3,8 +3,8 @@
   "private": true,
   "packageManager": "pnpm@10.29.3",
   "scripts": {
-    "build": "pnpm --filter rlusd build",
-    "test": "pnpm --filter rlusd test:run",
-    "typecheck": "pnpm --filter rlusd typecheck"
+    "build": "node -e \"console.log('rlusd-skills is now skills/docs-only; no local build target')\"",
+    "test": "node -e \"console.log('rlusd-skills is now skills/docs-only; no local runtime tests')\"",
+    "typecheck": "node -e \"console.log('rlusd-skills is now skills/docs-only; no local typecheck target')\""
   }
 }

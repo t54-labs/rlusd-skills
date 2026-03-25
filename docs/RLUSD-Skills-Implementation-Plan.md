@@ -262,11 +262,11 @@ rlusd evm tx receipt --hash 0x... --json
 #### EVM Write Path
 
 ```bash
-rlusd evm transfer prepare --chain ethereum-mainnet --from wallet:ops --to 0x... --amount 25.5 --json
+rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
 rlusd evm transfer execute --plan ./plan.json --json
-rlusd evm approve prepare --chain ethereum-mainnet --owner wallet:ops --spender 0x... --amount 1000 --json
+rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
 rlusd evm approve execute --plan ./plan.json --json
-rlusd evm permit build --chain ethereum-mainnet --owner wallet:ops --spender 0x... --amount 1000 --json
+rlusd evm permit build --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
 rlusd evm tx wait --hash 0x... --json
 ```
 
@@ -283,7 +283,7 @@ rlusd xrpl payment receipt --hash <txid> --json
 ```bash
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
 rlusd xrpl trustline execute --plan ./plan.json --json
-rlusd xrpl payment prepare --chain xrpl-mainnet --from wallet:ops --to r... --amount 250 --json
+rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
 rlusd xrpl payment execute --plan ./plan.json --json
 rlusd xrpl tx wait --hash <txid> --json
 ```
@@ -302,8 +302,8 @@ rlusd defi supply execute --plan ./plan.json --json
 
 ```bash
 rlusd fiat onboarding checklist --json
-rlusd fiat buy instructions --wallet-id <wallet-id> --chain xrpl-mainnet --json
-rlusd fiat redeem instructions --wallet-id <wallet-id> --amount 10000 --json
+rlusd fiat buy instructions --json
+rlusd fiat redeem instructions --json
 ```
 
 The `fiat` namespace is intentionally guidance-oriented in v1 because Ripple's current public flow depends on UI onboarding, approved bank accounts, and bank wires.[10][11][12]
@@ -344,7 +344,7 @@ Every command must:
     "plan_id": "plan_01H...",
     "action": "evm.transfer",
     "requires_confirmation": true,
-    "human_summary": "Transfer 25.5 RLUSD from wallet:ops to 0xabc... on Ethereum Mainnet",
+    "human_summary": "Transfer 25.5 RLUSD from ops to 0xabc... on Ethereum Mainnet",
     "asset": {
       "symbol": "RLUSD",
       "address": "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD",
@@ -352,7 +352,7 @@ Every command must:
       "decimals": 18
     },
     "params": {
-      "from": "wallet:ops",
+      "from": "ops",
       "to": "0xabc...",
       "amount": "25.5"
     }
@@ -522,7 +522,8 @@ Support three signing modes:
 
 ### 9.2 Wallet Alias Resolution
 
-Support aliases like `wallet:ops`, `wallet:treasury`, `wallet:treasury-xrpl`.
+Prefer explicit wallet flags like `--from-wallet`, `--owner-wallet`, and
+`--wallet`.
 
 Define them in local config:
 

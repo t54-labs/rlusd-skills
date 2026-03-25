@@ -13,7 +13,7 @@ The external CLI branch currently targeted for cutover is
 
 The biggest remaining gap is:
 
-- final removal of the embedded `cli/rlusd` package after cutover QA.
+- final repo-level validation after removing the embedded CLI package.
 
 ## Phase Status
 
@@ -208,7 +208,7 @@ Completed in repo:
 ### Backlog Still Open
 
 - finish the broad examples/planning-doc rewrite
-- remove the embedded `cli/rlusd` package
+- embedded `cli/rlusd` package removal and workspace cleanup
 - run final repo QA after workspace cleanup
 
 ## Verification Snapshot

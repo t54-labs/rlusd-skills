@@ -2,14 +2,16 @@
 
 ## Prerequisites
 
-- build the CLI with `pnpm --filter rlusd build`
-- configure `.rlusd/config.json` plus `ETHEREUM_MAINNET_RPC_URL` for execution
-- remember that quotes are preview-only and registry-backed in the current batch
+- install `rlusd-cli` from the pushed `feat/skills-backend-migration` branch
+- set `RLUSD_WALLET_PASSWORD`
+- configure an Ethereum wallet in `~/.config/rlusd-cli/wallets`
+- remember that `defi quote swap` is live quote data with a short TTL
+- remember that `defi supply preview` remains preview-only guidance
 
 ## Discover RLUSD Venues
 
 ```bash
-node cli/rlusd/dist/index.js defi venues \
+rlusd defi venues \
   --chain ethereum-mainnet \
   --capability swap,lend,lp \
   --json
@@ -18,13 +20,13 @@ node cli/rlusd/dist/index.js defi venues \
 Current bundled venues:
 
 - `aave` for lend/borrow metadata and supply execution
-- `curve` for swap preview and LP capability metadata
-- `uniswap` for swap preview and LP capability metadata
+- `curve` for swap/LP discovery metadata
+- `uniswap` for live swap quotes and LP discovery metadata
 
 ## Preview a Swap Quote
 
 ```bash
-node cli/rlusd/dist/index.js defi quote swap \
+rlusd defi quote swap \
   --chain ethereum-mainnet \
   --from RLUSD \
   --to USDC \
@@ -36,17 +38,18 @@ Review:
 
 - `data.route.venue`
 - `data.route.pricing_source`
-- `data.route.rate`
 - `data.route.amount_out`
+- `data.route.quoted_at`
+- `data.route.ttl_seconds`
+- `data.route.expires_at`
 - `warnings`
 
-The current registry should select `curve` as the best preview route for
-`RLUSD -> USDC`.
+Treat the quote as expiring market data, not a standing execution guarantee.
 
 ## Preview an Aave Supply Flow
 
 ```bash
-node cli/rlusd/dist/index.js defi supply preview \
+rlusd defi supply preview \
   --chain ethereum-mainnet \
   --venue aave \
   --amount 5000 \
@@ -63,10 +66,10 @@ Review:
 ## Prepare an Aave Supply Plan
 
 ```bash
-node cli/rlusd/dist/index.js defi supply prepare \
+rlusd defi supply prepare \
   --chain ethereum-mainnet \
   --venue aave \
-  --from wallet:ops \
+  --from-wallet ops \
   --amount 5000 \
   --json
 ```
@@ -82,9 +85,10 @@ submitting anything.
 ## Execute the Prepared Supply Plan
 
 ```bash
-node cli/rlusd/dist/index.js defi supply execute \
-  --plan ./.rlusd/plans/<plan_id>.json \
+rlusd defi supply execute \
+  --plan ~/.config/rlusd-cli/plans/<plan_id>.json \
   --confirm-plan-id <plan_id> \
+  --password "$RLUSD_WALLET_PASSWORD" \
   --json
 ```
 
@@ -93,7 +97,7 @@ The response returns submitted hashes for each stored step.
 ## Current Limitations
 
 - swap execution is not implemented
-- quotes are not live market data
+- quotes are live but short-lived
 - the current supply execute path is `aave`-only
 - preview warnings such as `collateral_unsupported` should be treated as action
   blockers, not informational decoration

@@ -2,28 +2,15 @@
 
 ## Prerequisites
 
-- build the CLI with `pnpm --filter rlusd build`
-- configure `.rlusd/config.json` if you plan to execute a trust-line or payment
+- install `rlusd-cli` from the pushed `feat/skills-backend-migration` branch
+- set `RLUSD_WALLET_PASSWORD`
+- configure an XRPL wallet in `~/.config/rlusd-cli/wallets`
 - use a valid XRPL classic address for all examples
-
-Example wallet config entry:
-
-```json
-{
-  "wallets": {
-    "treasury-xrpl": {
-      "chain": "xrpl-mainnet",
-      "address": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
-      "signer": "env:XRPL_MAINNET_SEED"
-    }
-  }
-}
-```
 
 ## Resolve RLUSD Metadata
 
 ```bash
-node cli/rlusd/dist/index.js resolve asset --chain xrpl-mainnet --json
+rlusd resolve asset --chain xrpl-mainnet --symbol RLUSD --json
 ```
 
 Expected highlights:
@@ -35,7 +22,7 @@ Expected highlights:
 ## Check Trust-Line Status
 
 ```bash
-node cli/rlusd/dist/index.js xrpl trustline status \
+rlusd xrpl trustline status \
   --chain xrpl-mainnet \
   --address rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe \
   --json
@@ -46,7 +33,7 @@ Use this before planning a payment to the destination account.
 ## Read Account Info
 
 ```bash
-node cli/rlusd/dist/index.js xrpl account info \
+rlusd xrpl account info \
   --chain xrpl-mainnet \
   --address rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe \
   --json
@@ -55,7 +42,7 @@ node cli/rlusd/dist/index.js xrpl account info \
 ## Prepare a Trust Line
 
 ```bash
-node cli/rlusd/dist/index.js xrpl trustline prepare \
+rlusd xrpl trustline prepare \
   --chain xrpl-mainnet \
   --address rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe \
   --limit 100000 \
@@ -72,16 +59,18 @@ Review the returned:
 ## Execute the Prepared Trust Line
 
 ```bash
-node cli/rlusd/dist/index.js xrpl trustline execute \
-  --plan ./.rlusd/plans/<plan_id>.json \
+rlusd xrpl trustline execute \
+  --plan ~/.config/rlusd-cli/plans/<plan_id>.json \
   --confirm-plan-id <plan_id> \
+  --wallet treasury-xrpl \
+  --password "$RLUSD_WALLET_PASSWORD" \
   --json
 ```
 
 ## Wait for Validation
 
 ```bash
-node cli/rlusd/dist/index.js xrpl tx wait \
+rlusd xrpl tx wait \
   --chain xrpl-mainnet \
   --hash <tx_hash> \
   --json
@@ -92,9 +81,9 @@ node cli/rlusd/dist/index.js xrpl tx wait \
 Before this step, make sure the destination already has an RLUSD trust line.
 
 ```bash
-node cli/rlusd/dist/index.js xrpl payment prepare \
+rlusd xrpl payment prepare \
   --chain xrpl-mainnet \
-  --from wallet:treasury-xrpl \
+  --from-wallet treasury-xrpl \
   --to rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh \
   --amount 250 \
   --json
@@ -106,16 +95,18 @@ If the destination account cannot receive RLUSD, preparation fails with
 ## Execute the Prepared Payment
 
 ```bash
-node cli/rlusd/dist/index.js xrpl payment execute \
-  --plan ./.rlusd/plans/<plan_id>.json \
+rlusd xrpl payment execute \
+  --plan ~/.config/rlusd-cli/plans/<plan_id>.json \
   --confirm-plan-id <plan_id> \
+  --wallet treasury-xrpl \
+  --password "$RLUSD_WALLET_PASSWORD" \
   --json
 ```
 
 ## Read the Payment Receipt
 
 ```bash
-node cli/rlusd/dist/index.js xrpl payment receipt \
+rlusd xrpl payment receipt \
   --chain xrpl-mainnet \
   --hash <tx_hash> \
   --json

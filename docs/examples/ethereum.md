@@ -2,28 +2,15 @@
 
 ## Prerequisites
 
-- build the CLI with `pnpm --filter rlusd build`
-- set `ETHEREUM_MAINNET_RPC_URL`
-- configure `.rlusd/config.json` if you plan to execute a transaction
-
-Example wallet config entry:
-
-```json
-{
-  "wallets": {
-    "ops": {
-      "chain": "ethereum-mainnet",
-      "address": "0x1234567890123456789012345678901234567890",
-      "signer": "env:OPS_PRIVATE_KEY"
-    }
-  }
-}
-```
+- install `rlusd-cli` from the pushed `feat/skills-backend-migration` branch
+- set `RLUSD_WALLET_PASSWORD`
+- configure an Ethereum wallet in `~/.config/rlusd-cli/wallets`
+- set the Ethereum RPC in `~/.config/rlusd-cli/config.yml` if you are executing on chain
 
 ## Resolve RLUSD Metadata
 
 ```bash
-node cli/rlusd/dist/index.js resolve asset --chain ethereum-mainnet --json
+rlusd resolve asset --chain ethereum-mainnet --symbol RLUSD --json
 ```
 
 Expected highlights:
@@ -35,7 +22,7 @@ Expected highlights:
 ## Read a Balance
 
 ```bash
-node cli/rlusd/dist/index.js evm balance \
+rlusd evm balance \
   --chain ethereum-mainnet \
   --address 0x1234567890123456789012345678901234567890 \
   --json
@@ -44,7 +31,7 @@ node cli/rlusd/dist/index.js evm balance \
 ## Read an Allowance
 
 ```bash
-node cli/rlusd/dist/index.js evm allowance \
+rlusd evm allowance \
   --chain ethereum-mainnet \
   --owner 0x1234567890123456789012345678901234567890 \
   --spender 0x1111111111111111111111111111111111111111 \
@@ -54,9 +41,9 @@ node cli/rlusd/dist/index.js evm allowance \
 ## Prepare a Transfer
 
 ```bash
-node cli/rlusd/dist/index.js evm transfer prepare \
+rlusd evm transfer prepare \
   --chain ethereum-mainnet \
-  --from wallet:ops \
+  --from-wallet ops \
   --to 0x1111111111111111111111111111111111111111 \
   --amount 25.5 \
   --json
@@ -75,9 +62,10 @@ Review the returned:
 Use the exact values returned by `prepare`:
 
 ```bash
-node cli/rlusd/dist/index.js evm transfer execute \
-  --plan ./.rlusd/plans/<plan_id>.json \
+rlusd evm transfer execute \
+  --plan ~/.config/rlusd-cli/plans/<plan_id>.json \
   --confirm-plan-id <plan_id> \
+  --password "$RLUSD_WALLET_PASSWORD" \
   --json
 ```
 
@@ -86,7 +74,7 @@ The response returns the submitted `tx_hash`.
 ## Wait for Mining
 
 ```bash
-node cli/rlusd/dist/index.js evm tx wait \
+rlusd evm tx wait \
   --chain ethereum-mainnet \
   --hash 0x<tx_hash> \
   --json
@@ -95,7 +83,7 @@ node cli/rlusd/dist/index.js evm tx wait \
 ## Inspect the Receipt
 
 ```bash
-node cli/rlusd/dist/index.js evm tx receipt \
+rlusd evm tx receipt \
   --chain ethereum-mainnet \
   --hash 0x<tx_hash> \
   --json
@@ -104,16 +92,17 @@ node cli/rlusd/dist/index.js evm tx receipt \
 ## Prepare and Execute an Approval
 
 ```bash
-node cli/rlusd/dist/index.js evm approve prepare \
+rlusd evm approve prepare \
   --chain ethereum-mainnet \
-  --owner wallet:ops \
+  --owner-wallet ops \
   --spender 0x2222222222222222222222222222222222222222 \
   --amount 1000 \
   --json
 
-node cli/rlusd/dist/index.js evm approve execute \
-  --plan ./.rlusd/plans/<plan_id>.json \
+rlusd evm approve execute \
+  --plan ~/.config/rlusd-cli/plans/<plan_id>.json \
   --confirm-plan-id <plan_id> \
+  --password "$RLUSD_WALLET_PASSWORD" \
   --json
 ```
 

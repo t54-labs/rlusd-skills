@@ -28,7 +28,6 @@ runtime is now the external `rlusd-cli` branch
 
 ```text
 .claude-plugin/          Plugin marketplace metadata
-cli/rlusd/               TypeScript CLI package
 docs/                    Architecture, examples, reference, and status docs
 plugins/ripple/          Skill files and plugin README
 ```
