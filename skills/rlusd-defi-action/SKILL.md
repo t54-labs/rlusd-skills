@@ -7,7 +7,8 @@ user-invocable: true
 # Purpose
 
 Use this skill when the user explicitly wants to take a DeFi action with RLUSD,
-not just discover venues or preview routes.
+not just discover venues or preview routes. This skill owns the plan-writing
+and submission side of the flow after discovery is complete.
 
 # When To Use This Skill
 
@@ -17,8 +18,8 @@ not just discover venues or preview routes.
 
 # Do Not Use This Skill When
 
-- The task is only about DeFi discovery or swap preview; use
-  `use-rlusd-evm-defi`.
+- The task is only about DeFi discovery, live quotes, LP previews, or supply
+  previews; use `use-rlusd-evm-defi`.
 - The task is about direct Ethereum token transfer/approval or XRPL trust-line
   and payment flows.
 - The task is about institutional buy/redeem guidance.
@@ -41,6 +42,8 @@ not just discover venues or preview routes.
   flows.
 - Before any DeFi action that uses `--from-wallet`, load `rlusd-wallets` to
   confirm the local wallet alias or provision one with explicit user approval.
+- Treat `use-rlusd-evm-defi` as the discovery/preview handoff before this
+  action flow.
 - For swaps, use `defi swap prepare`, review the stored steps, then
   `defi swap execute` with the reviewed `plan_id`.
 - For Curve LP, use `defi lp preview`, then `defi lp prepare`, then

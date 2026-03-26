@@ -39,7 +39,7 @@ digraph wallet_preflight {
     request [label="RLUSD request", shape=ellipse];
     wallet_backed [label="Needs --from-wallet,\n--owner-wallet, or --wallet?", shape=diamond];
     read_only [label="Use address-based\nread flow", shape=box];
-    inspect [label="Run wallet preflight:\nconfig get + wallet list", shape=box];
+    inspect [label="Run wallet preflight:\nconfig get --json + wallet list --json", shape=box];
     exists [label="Needed wallet alias\nalready exists?", shape=diamond];
     continue [label="Continue parent RLUSD\nprepare/review flow", shape=box];
     ask [label="Ask: generate new\nor import existing wallet?", shape=box];
@@ -57,6 +57,8 @@ digraph wallet_preflight {
 ```
 
 - Always start with safe inspection commands.
+- Prefer `--json` on wallet inspection and setup commands so the agent gets
+  structured envelopes throughout the preflight.
 - Never invent a wallet alias from example names like `ops` or
   `treasury-xrpl`.
 - Only create, import, or switch a wallet after explicit user approval.
@@ -66,54 +68,54 @@ digraph wallet_preflight {
 # Current Command Sequence
 
 ```bash
-rlusd config get
+rlusd config get --json
 rlusd wallet list --json
-rlusd wallet address --chain ethereum
-rlusd wallet address --chain xrpl
+rlusd wallet address --chain ethereum --json
+rlusd wallet address --chain xrpl --json
 
-rlusd wallet generate --chain ethereum --name ops --password "$RLUSD_WALLET_PASSWORD"
-rlusd wallet generate --chain xrpl --name treasury-xrpl --password "$RLUSD_WALLET_PASSWORD"
+rlusd wallet generate --chain ethereum --name ops --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd wallet generate --chain xrpl --name treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 
-rlusd wallet import --chain ethereum --name ops --private-key 0x... --password "$RLUSD_WALLET_PASSWORD"
-rlusd wallet import --chain ethereum --name ops --mnemonic "word1 word2 ..." --password "$RLUSD_WALLET_PASSWORD"
-rlusd wallet import --chain xrpl --name treasury-xrpl --secret s... --password "$RLUSD_WALLET_PASSWORD"
+rlusd wallet import --chain ethereum --name ops --private-key 0x... --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd wallet import --chain ethereum --name ops --mnemonic "word1 word2 ..." --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd wallet import --chain xrpl --name treasury-xrpl --secret s... --password "$RLUSD_WALLET_PASSWORD" --json
 
-rlusd wallet use ops --chain ethereum
-rlusd wallet use treasury-xrpl --chain xrpl
+rlusd wallet use ops --chain ethereum --json
+rlusd wallet use treasury-xrpl --chain xrpl --json
 ```
 
 # Wallet Preflight
 
-1. Run `rlusd config get` to confirm the active network and default chain.
+1. Run `rlusd config get --json` to confirm the active network and default chain.
 2. Run `rlusd wallet list --json` to see whether the needed local wallet alias
    already exists.
 3. If the parent flow needs the current default wallet address, use
-   `rlusd wallet address --chain <chain>`.
+   `rlusd wallet address --chain <chain> --json`.
 4. If the alias exists, return to the parent RLUSD skill and continue with the
    wallet-backed `prepare` step.
 5. If the alias is missing, ask whether the user wants to:
    - generate a new wallet, or
    - import an existing wallet.
 6. Only after approval, run the matching `wallet generate` or `wallet import`
-   command.
+   command with `--json`.
 7. If the user wants that alias to become the default wallet for the chain, run
-   `rlusd wallet use <name> --chain <chain>`.
+   `rlusd wallet use <name> --chain <chain> --json`.
 
 # Quick Reference
 
-- Inspect config: `rlusd config get`
+- Inspect config: `rlusd config get --json`
 - List local wallets: `rlusd wallet list --json`
-- Show current default wallet address: `rlusd wallet address --chain <chain>`
-- Generate a new wallet: `rlusd wallet generate --chain <chain> --name <name>`
-- Import an existing wallet: `rlusd wallet import --chain <chain> --name <name> ...`
-- Set the default wallet: `rlusd wallet use <name> --chain <chain>`
+- Show current default wallet address: `rlusd wallet address --chain <chain> --json`
+- Generate a new wallet: `rlusd wallet generate --chain <chain> --name <name> --json`
+- Import an existing wallet: `rlusd wallet import --chain <chain> --name <name> ... --json`
+- Set the default wallet: `rlusd wallet use <name> --chain <chain> --json`
 - Password source: prefer `RLUSD_WALLET_PASSWORD` for encrypted wallet actions
 
 # Example
 
 For "Send 25 RLUSD on Ethereum from my wallet":
 
-1. Run `rlusd config get`
+1. Run `rlusd config get --json`
 2. Run `rlusd wallet list --json`
 3. If no Ethereum wallet alias exists, ask whether to generate or import one
 4. Only after wallet setup is confirmed, return to `rlusd-transfer` and run

@@ -18,13 +18,14 @@ test('DeFi skill retries common Uniswap fee tiers before declaring a quote unava
   assert.match(skill, /before concluding[\s\S]*(quote|pair)[\s\S]*unavailable/i);
 });
 
-test('routing docs explain explicit chain and venue usage for top-level defi flows', () => {
+test('routing docs explain explicit chain and venue usage for top-level defi discovery flows', () => {
   const routing = read('skills/use-rlusd-evm-defi/references/routing.md');
   const venues = read('skills/use-rlusd-evm-defi/references/venues.md');
 
   assert.match(routing, /defi quote swap[\s\S]*--chain[\s\S]*--venue/i);
-  assert.match(routing, /defi swap prepare/i);
-  assert.match(routing, /defi swap execute/i);
+  assert.match(routing, /switch to `rlusd-defi-action`/i);
+  assert.doesNotMatch(routing, /defi swap prepare/i);
+  assert.doesNotMatch(routing, /defi swap execute/i);
   assert.doesNotMatch(routing, /uniswap-only/i);
   assert.match(venues, /curve/i);
   assert.doesNotMatch(venues, /discovery-only/i);
@@ -99,6 +100,51 @@ test('ethereum read guidance matches the current CLI balance and allowance surfa
     /### `eth allowance`[\s\S]*rlusd eth allowance --chain <chain> --owner-wallet <wallet_name> --spender <address> --json/i,
   );
   assert.match(troubleshooting, /unknown command 'balance'|evm balance/i);
+});
+
+test('wallet skill uses json consistently for agent-facing command examples', () => {
+  const walletSkill = read('skills/rlusd-wallets/SKILL.md');
+
+  assert.match(walletSkill, /rlusd config get --json/i);
+  assert.match(walletSkill, /rlusd wallet list --json/i);
+  assert.match(walletSkill, /rlusd wallet address --chain ethereum --json/i);
+  assert.match(walletSkill, /rlusd wallet address --chain xrpl --json/i);
+  assert.match(walletSkill, /rlusd wallet generate --chain ethereum --name ops --password "\$RLUSD_WALLET_PASSWORD" --json/i);
+  assert.match(walletSkill, /rlusd wallet import --chain ethereum --name ops --private-key 0x\.\.\. --password "\$RLUSD_WALLET_PASSWORD" --json/i);
+  assert.match(walletSkill, /rlusd wallet use ops --chain ethereum --json/i);
+});
+
+test('discovery skill stops at discovery and preview while action skill owns prepare and execute flows', () => {
+  const discoverySkill = read('skills/use-rlusd-evm-defi/SKILL.md');
+  const actionSkill = read('skills/rlusd-defi-action/SKILL.md');
+
+  assert.match(discoverySkill, /rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json/i);
+  assert.match(discoverySkill, /rlusd defi quote swap --chain ethereum-mainnet --venue curve --from RLUSD --to USDC --amount 1000 --json/i);
+  assert.match(discoverySkill, /rlusd defi lp preview --chain ethereum-mainnet --venue curve --operation add --rlusd-amount 1000 --usdc-amount 1000 --json/i);
+  assert.match(discoverySkill, /rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json/i);
+  assert.doesNotMatch(discoverySkill, /defi swap prepare/i);
+  assert.doesNotMatch(discoverySkill, /defi swap execute/i);
+  assert.doesNotMatch(discoverySkill, /defi lp prepare/i);
+  assert.doesNotMatch(discoverySkill, /defi lp execute/i);
+  assert.doesNotMatch(discoverySkill, /defi supply prepare/i);
+  assert.doesNotMatch(discoverySkill, /defi supply execute/i);
+
+  assert.match(actionSkill, /defi swap prepare/i);
+  assert.match(actionSkill, /defi swap execute/i);
+  assert.match(actionSkill, /defi lp prepare/i);
+  assert.match(actionSkill, /defi lp execute/i);
+  assert.match(actionSkill, /defi supply prepare/i);
+  assert.match(actionSkill, /defi supply execute/i);
+});
+
+test('router skill gives a default start command for ambiguous RLUSD requests', () => {
+  const routing = read('skills/use-rlusd/SKILL.md');
+
+  assert.match(routing, /start with `rlusd resolve asset --chain ethereum-mainnet --json`/i);
+  assert.match(
+    routing,
+    /if the user already said defi, start with `rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json`/i,
+  );
 });
 
 test('docs recommend explicit chain and venue without overstating runtime requirements', () => {

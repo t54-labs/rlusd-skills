@@ -33,25 +33,21 @@ Current quote behavior:
 - quote output should be treated as expiring market data rather than static
   preview data
 
-## Swap Plan Routing
+## Action Handoff
 
-```bash
-rlusd defi swap prepare --chain ethereum-mainnet --venue curve --from-wallet ops --from RLUSD --to USDC --amount 1000 --slippage 50 --json
-rlusd defi swap execute --plan ~/.config/rlusd-cli/plans/<plan_id>.json --confirm-plan-id <plan_id> --json
-```
+Use `use-rlusd-evm-defi` for venue discovery, live quotes, LP previews, and
+supply previews only.
 
-Current swap routing:
+When the user wants to create a plan or submit a DeFi action:
 
-- `defi swap prepare` stores deterministic venue-specific `intent.steps`
-- `defi swap execute` replays the stored steps after confirmation checks
-- Curve swap execution in this batch is limited to `ethereum-mainnet` RLUSD/USDC
+- switch to `rlusd-defi-action`
+- run wallet preflight with `rlusd-wallets` before any wallet-backed step
+- keep the action flow on a `prepare -> review -> execute` path
 
 ## LP Routing
 
 ```bash
 rlusd defi lp preview --chain ethereum-mainnet --venue curve --operation add --rlusd-amount 1000 --usdc-amount 1000 --json
-rlusd defi lp prepare --chain ethereum-mainnet --venue curve --operation remove --from-wallet ops --lp-amount 50 --receive-token RLUSD --json
-rlusd defi lp execute --plan ~/.config/rlusd-cli/plans/<plan_id>.json --confirm-plan-id <plan_id> --json
 ```
 
 Current LP routing:
@@ -59,19 +55,18 @@ Current LP routing:
 - LP flows currently require `--venue curve`
 - `--operation add` uses both token amounts
 - `--operation remove` uses `--lp-amount` plus `--receive-token`
-- `defi lp preview` returns preview data only; `plan_id`, `plan_path`, and
-  `intent.steps` appear on `defi lp prepare`
+- `defi lp preview` returns preview data only; it does not return `plan_id`,
+  `plan_path`, or `intent.steps`
 - the bundled LP path is limited to `ethereum-mainnet`
 
 ## Supply Routing
 
 ```bash
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
-rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 ```
 
 Current supply routing is narrow:
 
-- only venues with the `lend` capability can be previewed/prepared
-- `aave` is the only bundled supply execution path
-- the stored plan expands into `approve` then `supply`
+- only venues with the `lend` capability can be previewed
+- `aave` is the only bundled supply preview path in this batch
+- move to `rlusd-defi-action` for any wallet-backed supply plan or submission
