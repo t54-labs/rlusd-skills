@@ -43,6 +43,7 @@ rlusd fiat redeem instructions --json
 Use the output to confirm:
 
 - the process is clearly marked as manual and institutional,
+- the JSON guidance is chain-agnostic and omits `chain`,
 - chain-specific prerequisites such as XRPL trust lines should be checked
   separately with the chain skills,
 - and warnings distinguish bank-wire timing from on-chain finality.
@@ -51,6 +52,8 @@ Use the output to confirm:
 
 - These commands generate instructions only. They do not automate onboarding,
   bank registration, or wire submission.
+- The JSON envelopes intentionally omit `chain`; chain-specific state should be
+  checked with the Ethereum or XRPL skills.
 - Only Ripple-approved bank accounts are valid for funding and redemption.
 - XRPL buy flows require a trust line before the wallet can receive RLUSD.
 - Banking settlement timing is distinct from blockchain confirmation timing.

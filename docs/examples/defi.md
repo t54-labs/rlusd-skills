@@ -115,7 +115,10 @@ rlusd defi lp preview \
 Review:
 
 - `operation`
-- `lp_token_amount`
+- `expected_lp_amount`
+- `quoted_at`
+- `ttl_seconds`
+- `expires_at`
 - `warnings`
 
 This response is preview-only. It does not return `plan_id`, `plan_path`, or

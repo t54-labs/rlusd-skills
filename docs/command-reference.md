@@ -142,6 +142,18 @@ Read RLUSD trust-line state for an XRPL account.
 rlusd xrpl trustline status --chain <chain> --address <r-address> --json
 ```
 
+Returns structured status data including:
+
+- `address`
+- `account_exists`
+- `has_trustline`
+- `balance`
+- `limit`
+- `frozen`
+
+When no trust line exists, the response remains structured and sets
+`has_trustline = false`.
+
 ### `xrpl trustline prepare`
 
 Create a deterministic RLUSD `TrustSet` plan.
@@ -264,6 +276,8 @@ Warnings:
   from the global flag or `default_chain` config
 - the default `--fee-tier` is `3000`; retry `100`, `500`, `3000`, and `10000`
   before concluding a Uniswap pair is unsupported
+- Uniswap `QUOTE_UNAVAILABLE` errors may be marked retryable with
+  `error.details.retry_hint = retry_fee_tiers`
 - `--fee-tier` is Uniswap-specific; Curve uses the fixed Ethereum mainnet
   RLUSD/USDC pool
 - Curve swap quotes are limited to `ethereum-mainnet` and the `RLUSD <-> USDC`
@@ -303,6 +317,12 @@ rlusd defi lp preview --chain <chain> --venue curve --operation <add|remove> [--
 
 Returns preview data only. It does not return `plan_id`, `plan_path`, or
 `intent.steps`.
+
+Preview data includes:
+
+- `quoted_at`
+- `ttl_seconds`
+- `expires_at`
 
 ### `defi lp prepare`
 
@@ -364,6 +384,10 @@ rlusd defi supply execute --plan <path> [--confirm-plan-id <plan_id>] --json
 Returns submitted step hashes for each stored step.
 
 ## `fiat`
+
+The `fiat` guidance commands are chain-agnostic. Their JSON envelopes omit
+`chain`, and chain-specific prerequisites should be checked separately with the
+Ethereum or XRPL skills.
 
 ### `fiat onboarding checklist`
 

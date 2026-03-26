@@ -64,8 +64,9 @@ Use the output to confirm:
 - the quote result surfaces `route.venue`, plus `fee_bps` for Uniswap or
   `pool_name`/`pool_address` for Curve,
 - the quoted `amount_out` is treated as expiring live quote data,
-- `defi lp preview` stays preview-only and does not return `plan_id`,
-  `plan_path`, or `intent.steps`,
+- `defi lp preview` includes `quoted_at`, `ttl_seconds`, and `expires_at` while
+  staying preview-only and not returning `plan_id`, `plan_path`, or
+  `intent.steps`,
 - Aave supply preview outputs are marked as preview-only and surface whether
   RLUSD is treated as collateral,
 - and preview warnings stay attached to the supply preview flow rather than the
@@ -77,7 +78,8 @@ Use the output to confirm:
 - `defi quote swap` defaults to Uniswap fee tier `3000`; a revert there does not
   prove the pair is unsupported.
 - Retry `--fee-tier 100`, `500`, `3000`, and `10000` before concluding a quote is
-  unavailable.
+  unavailable; Uniswap `QUOTE_UNAVAILABLE` errors can surface
+  `retry_hint = retry_fee_tiers`.
 - Examples in this skill pass explicit `--chain` and `--venue` for
   predictability, but `--chain` can also come from the global flag or
   `default_chain` config.

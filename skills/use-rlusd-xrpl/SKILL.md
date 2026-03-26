@@ -52,6 +52,8 @@ Use the output to confirm:
 - `symbol` is `RLUSD`
 - `issuer` matches the RLUSD issuer account
 - `currency` is `RLUSD`
+- trust-line status returns structured `account_exists` and `has_trustline`
+  fields, even when no trust line exists yet
 - trust-line status and account reads use the same issuer-backed registry metadata
 - trust-line and payment plans resolve against the same issuer-backed registry metadata
 - execute commands submit the same reviewed XRPL transaction JSON only after

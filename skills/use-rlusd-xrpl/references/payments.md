@@ -12,6 +12,8 @@ rlusd xrpl payment receipt --chain xrpl-mainnet --hash <tx_hash> --json
 ## Preparation Checks
 
 Payment preparation validates the destination before writing a plan.
+The RLUSD issuer account does not require an inbound trust line, so issuer-bound
+payments skip that specific preflight.
 
 Common failures:
 

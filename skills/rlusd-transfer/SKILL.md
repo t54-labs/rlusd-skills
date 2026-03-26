@@ -60,7 +60,8 @@ rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 - Do not assume example wallet aliases like `ops` or `treasury-xrpl` already
   exist locally; use `rlusd-wallets` before wallet-backed transfer steps.
 - XRPL payment execution depends on the destination account already having a
-  trust line when RLUSD is required there.
+  trust line when RLUSD is required there. The RLUSD issuer account does not
+  require an inbound trust line.
 - Follow wait/receipt commands after execution instead of assuming submission
   equals success.
 
