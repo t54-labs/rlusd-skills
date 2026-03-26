@@ -228,7 +228,7 @@ Notes:
 Read a live RLUSD swap quote with expiry metadata.
 
 ```bash
-rlusd defi quote swap --chain <chain> --from RLUSD --to USDC --amount <amount> --json
+rlusd defi quote swap --chain <chain> --from RLUSD --to USDC --amount <amount> [--fee-tier <fee>] --json
 ```
 
 Returns:
@@ -244,6 +244,10 @@ Returns:
 Warnings:
 
 - `quote_expires`
+- the default `--fee-tier` is `3000`; retry `100`, `500`, `3000`, and `10000`
+  before concluding the pair is unsupported
+- `curve` may appear in `defi venues`, but `defi quote swap` currently uses the
+  Uniswap quote path only and does not accept `--venue`
 
 ### `defi supply preview`
 

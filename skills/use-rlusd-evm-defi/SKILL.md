@@ -28,6 +28,10 @@ preview-first DeFi route selection on EVM chains.
 
 - Start with `defi venues` to discover chain-compatible RLUSD venues by capability.
 - Use `defi quote swap` for a live quote only after confirming the venue matrix.
+- If the default quote returns `QUOTE_UNAVAILABLE`, retry common Uniswap fee tiers
+  `100`, `500`, `3000`, and `10000` before concluding the pair is unavailable.
+- Treat `curve` as discovery-only in this top-level flow. `defi quote swap`
+  currently routes through Uniswap and does not accept `--venue`.
 - Use `defi supply preview` and `defi supply prepare` for the first Aave-only
   lending flow.
 - Before DeFi actions that use `--from-wallet`, load `rlusd-wallets` to confirm
@@ -43,6 +47,7 @@ preview-first DeFi route selection on EVM chains.
 ```bash
 rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json
 rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --json
+rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --fee-tier 100 --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
 rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
@@ -52,6 +57,8 @@ Use the output to confirm:
 
 - the venue supports at least one requested capability from the filter,
 - the swap quote includes `quoted_at`, `ttl_seconds`, and `expires_at`,
+- the quote result surfaces `fee_bps`, especially when a non-default fee tier is
+  required,
 - the quoted `amount_out` is treated as expiring live quote data,
 - Aave supply preview outputs are marked as preview-only and surface whether
   RLUSD is treated as collateral,
@@ -63,6 +70,12 @@ Use the output to confirm:
 # Common Warnings
 
 - `defi quote swap` is live quote data and should be treated as time-sensitive.
+- `defi quote swap` defaults to Uniswap fee tier `3000`; a revert there does not
+  prove the pair is unsupported.
+- Retry `--fee-tier 100`, `500`, `3000`, and `10000` before concluding a quote is
+  unavailable.
+- `defi venues` may list `curve`, but the current quote path is Uniswap-only and
+  does not support `--venue`.
 - Capability filters match venues that support any requested capability.
 - Unsupported pairs or unsupported symbols should fail with structured quote
   errors.
@@ -81,7 +94,8 @@ Use the output to confirm:
 # Examples
 
 - "Where can RLUSD be used in DeFi on Ethereum?" -> run `defi venues`
-- "Preview swapping 1000 RLUSD to USDC." -> run `defi quote swap`
+- "Preview swapping 1000 RLUSD to USDC." -> run `defi quote swap`; if the
+  default quote fails, retry common fee tiers before reporting `QUOTE_UNAVAILABLE`
 - "Preview supplying 5000 RLUSD to Aave." -> run `defi supply preview`
 - "Prepare supplying 5000 RLUSD to Aave from my wallet." -> use `rlusd-wallets`, then run `defi supply prepare`
 - "Prepare supplying 5000 RLUSD to Aave." -> run `defi supply prepare`

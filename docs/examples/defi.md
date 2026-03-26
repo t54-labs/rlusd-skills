@@ -32,6 +32,14 @@ rlusd defi quote swap \
   --to USDC \
   --amount 1000 \
   --json
+
+rlusd defi quote swap \
+  --chain ethereum-mainnet \
+  --from RLUSD \
+  --to USDC \
+  --amount 1000 \
+  --fee-tier 100 \
+  --json
 ```
 
 Review:
@@ -39,12 +47,17 @@ Review:
 - `data.route.venue`
 - `data.route.pricing_source`
 - `data.route.amount_out`
+- `data.route.fee_bps`
 - `data.route.quoted_at`
 - `data.route.ttl_seconds`
 - `data.route.expires_at`
 - `warnings`
 
 Treat the quote as expiring market data, not a standing execution guarantee.
+If the default quote reverts, retry common Uniswap fee tiers `100`, `500`,
+`3000`, and `10000` before reporting `QUOTE_UNAVAILABLE`.
+`curve` may appear in `defi venues`, but the current quote command does not
+support `--venue`.
 
 ## Preview an Aave Supply Flow
 
@@ -98,6 +111,9 @@ The response returns submitted hashes for each stored step.
 
 - swap execution is not implemented
 - quotes are live but short-lived
+- `defi quote swap` defaults to fee tier `3000`, which may not match the only
+  live RLUSD pool for a given pair
+- `curve` is discovery-only in the current top-level quote flow
 - the current supply execute path is `aave`-only
 - preview warnings such as `collateral_unsupported` should be treated as action
   blockers, not informational decoration

@@ -67,6 +67,7 @@ task belongs to Ethereum or XRPL.
 rlusd resolve asset --chain ethereum-mainnet --json
 rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json
 rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --json
+rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --fee-tier 100 --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
 rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
@@ -102,6 +103,10 @@ rlusd fiat redeem instructions --json
   exist locally; use `rlusd-wallets` first when a flow depends on them.
 - `defi quote swap` is live quote data and should be described with quote
   freshness metadata such as `quoted_at`, `ttl_seconds`, and `expires_at`.
+- `defi quote swap` defaults to Uniswap fee tier `3000`; retry `100`, `500`,
+  `3000`, and `10000` before concluding the pair is unavailable.
+- `curve` may appear in `defi venues`, but the current quote flow is
+  Uniswap-only and does not support `--venue`.
 - If a requested chain is missing from the registry, fail clearly and extend the
   registry instead of inventing runtime values.
 

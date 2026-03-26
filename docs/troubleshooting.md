@@ -121,11 +121,17 @@ Symptom:
 Cause:
 
 - the external CLI could not produce a supported live quote for that pair
+- the selected Uniswap fee tier may not have a live RLUSD pool even when another
+  supported tier does
 
 What to do:
 
 - list swap venues with `rlusd defi venues --chain ethereum-mainnet --capability swap --json`
-- use currently modeled pairs only
+- retry `defi quote swap` with `--fee-tier 100`, `500`, `3000`, and `10000`
+- do not conclude the pair is unsupported until those common Uniswap tiers fail
+- remember that `curve` is discovery-only in the current quote flow and
+  `defi quote swap` does not accept `--venue`
+- if all common tiers fail, fall back to currently modeled pairs only
 
 ## Venue or Capability Unsupported
 

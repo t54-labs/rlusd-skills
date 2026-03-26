@@ -130,6 +130,14 @@ rlusd defi quote swap \
   --amount 1000 \
   --json
 
+rlusd defi quote swap \
+  --chain ethereum-mainnet \
+  --from RLUSD \
+  --to USDC \
+  --amount 1000 \
+  --fee-tier 100 \
+  --json
+
 rlusd defi supply prepare \
   --chain ethereum-mainnet \
   --venue aave \
@@ -137,6 +145,11 @@ rlusd defi supply prepare \
   --amount 5000 \
   --json
 ```
+
+`defi quote swap` currently reads from the Uniswap quote path only. Start with
+the default quote, then retry common fee tiers `100`, `500`, `3000`, and
+`10000` if the default call reverts. `curve` may still appear in venue
+discovery, but it is discovery-only in the current top-level quote flow.
 
 ## Documentation
 

@@ -13,11 +13,17 @@ requested capability, not necessarily all of them.
 
 ```bash
 rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --json
+rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --fee-tier 100 --json
 ```
 
 Current quote behavior:
 
 - the CLI inspects a live Uniswap quote path for the requested RLUSD pair
+- the default `--fee-tier` is `3000`
+- if the default quote fails, retry common Uniswap fee tiers `100`, `500`,
+  `3000`, and `10000` before concluding the pair is unavailable
+- `curve` may appear in `defi venues`, but the current quote path is still
+  Uniswap-only and does not accept `--venue`
 - the result includes freshness metadata: `quoted_at`, `ttl_seconds`, and
   `expires_at`
 - quote output should be treated as expiring market data rather than static

@@ -29,6 +29,10 @@ not just discover venues or preview routes.
   capability.
 - Use `defi quote swap` for live quote reads only. Swap execution is not
   implemented in this repo.
+- If a swap quote returns `QUOTE_UNAVAILABLE`, retry common Uniswap fee tiers
+  `100`, `500`, `3000`, and `10000` before concluding the pair is unavailable.
+- Treat `curve` as discovery-only in the current quote flow. `defi quote swap`
+  currently routes through Uniswap and does not accept `--venue`.
 - Before any DeFi action that uses `--from-wallet`, load `rlusd-wallets` to
   confirm the local wallet alias or provision one with explicit user approval.
 - For the current Aave-only lending flow, use `defi supply preview`, then
@@ -48,6 +52,12 @@ rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <pla
 
 - `defi quote swap` is live quote data and should be treated as expiring market
   data, while `defi supply preview` remains preview-only guidance.
+- `defi quote swap` defaults to Uniswap fee tier `3000`; a revert there does not
+  prove the pair is unsupported.
+- Retry `--fee-tier 100`, `500`, `3000`, and `10000` before reporting
+  `QUOTE_UNAVAILABLE` for a pair.
+- `defi venues` may list `curve`, but the current quote path is Uniswap-only and
+  does not support `--venue`.
 - The current supply execute path is Aave-only.
 - Aave supply execution submits the stored `approve` step before the stored
   `supply` step.

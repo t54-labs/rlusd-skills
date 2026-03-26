@@ -4,7 +4,7 @@
   "packageManager": "pnpm@10.29.3",
   "scripts": {
     "build": "node -e \"console.log('rlusd-skills is now skills/docs-only; no local build target')\"",
-    "test": "node -e \"console.log('rlusd-skills is now skills/docs-only; no local runtime tests')\"",
+    "test": "node --test tests/*.test.mjs",
     "typecheck": "node -e \"console.log('rlusd-skills is now skills/docs-only; no local typecheck target')\""
   }
 }
