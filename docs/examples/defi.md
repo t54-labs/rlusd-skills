@@ -20,14 +20,15 @@ rlusd defi venues \
 Current bundled venues:
 
 - `aave` for lend/borrow metadata and supply execution
-- `curve` for swap/LP discovery metadata
-- `uniswap` for live swap quotes and LP discovery metadata
+- `curve` for live RLUSD/USDC swap quotes plus LP preview/prepare/execute on `ethereum-mainnet`
+- `uniswap` for live swap quotes, especially when fee-tier selection matters
 
 ## Preview a Swap Quote
 
 ```bash
 rlusd defi quote swap \
   --chain ethereum-mainnet \
+  --venue uniswap \
   --from RLUSD \
   --to USDC \
   --amount 1000 \
@@ -35,10 +36,19 @@ rlusd defi quote swap \
 
 rlusd defi quote swap \
   --chain ethereum-mainnet \
+  --venue uniswap \
   --from RLUSD \
   --to USDC \
   --amount 1000 \
   --fee-tier 100 \
+  --json
+
+rlusd defi quote swap \
+  --chain ethereum-mainnet \
+  --venue curve \
+  --from RLUSD \
+  --to USDC \
+  --amount 1000 \
   --json
 ```
 
@@ -56,8 +66,83 @@ Review:
 Treat the quote as expiring market data, not a standing execution guarantee.
 If the default quote reverts, retry common Uniswap fee tiers `100`, `500`,
 `3000`, and `10000` before reporting `QUOTE_UNAVAILABLE`.
-`curve` may appear in `defi venues`, but the current quote command does not
-support `--venue`.
+Use `--venue curve` for the fixed Ethereum mainnet RLUSD/USDC pool. Use
+`--venue uniswap` when fee-tier selection matters.
+
+## Prepare a Curve Swap Plan
+
+```bash
+rlusd defi swap prepare \
+  --chain ethereum-mainnet \
+  --venue curve \
+  --from-wallet ops \
+  --from RLUSD \
+  --to USDC \
+  --amount 1000 \
+  --slippage 50 \
+  --json
+```
+
+Review:
+
+- `plan_id`
+- `plan_path`
+- `intent.steps`
+- `human_summary`
+
+## Execute the Prepared Swap Plan
+
+```bash
+rlusd defi swap execute \
+  --plan ~/.config/rlusd-cli/plans/<plan_id>.json \
+  --confirm-plan-id <plan_id> \
+  --password "$RLUSD_WALLET_PASSWORD" \
+  --json
+```
+
+## Preview a Curve LP Add Flow
+
+```bash
+rlusd defi lp preview \
+  --chain ethereum-mainnet \
+  --venue curve \
+  --operation add \
+  --rlusd-amount 1000 \
+  --usdc-amount 1000 \
+  --json
+```
+
+Review:
+
+- `operation`
+- `lp_token_amount`
+- `warnings`
+
+## Prepare a Curve LP Remove Plan
+
+```bash
+rlusd defi lp prepare \
+  --chain ethereum-mainnet \
+  --venue curve \
+  --operation remove \
+  --from-wallet ops \
+  --lp-amount 50 \
+  --receive-token RLUSD \
+  --json
+```
+
+`--operation add` requires both token amounts. `--operation remove` requires
+`--lp-amount` and an explicit `--receive-token` of `RLUSD` or `USDC`.
+
+## Execute the Prepared LP Plan
+
+```bash
+rlusd defi lp execute \
+  --plan ~/.config/rlusd-cli/plans/<plan_id>.json \
+  --confirm-plan-id <plan_id> \
+  --password "$RLUSD_WALLET_PASSWORD" \
+  --json
+```
 
 ## Preview an Aave Supply Flow
 
@@ -109,11 +194,11 @@ The response returns submitted hashes for each stored step.
 
 ## Current Limitations
 
-- swap execution is not implemented
 - quotes are live but short-lived
-- `defi quote swap` defaults to fee tier `3000`, which may not match the only
-  live RLUSD pool for a given pair
-- `curve` is discovery-only in the current top-level quote flow
+- `defi quote swap` defaults to Uniswap fee tier `3000`, which may not match
+  the best live RLUSD pool for a given pair
+- Curve support is intentionally narrow: `ethereum-mainnet` only and RLUSD/USDC
+  only for swap and LP flows
 - the current supply execute path is `aave`-only
 - preview warnings such as `collateral_unsupported` should be treated as action
   blockers, not informational decoration
