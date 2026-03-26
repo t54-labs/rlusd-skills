@@ -15,9 +15,10 @@ command surface for agents.
 
 ### Skill Layer
 
-The skill layer lives under `plugins/ripple/skills`.
+The skill layer lives under `skills/`.
 
 - routing skills choose the correct chain or product flow
+- wallet-preflight skill inspects local aliases before wallet-backed actions
 - action skills guide users through `prepare -> review -> execute`
 - reference subfiles capture chain-specific details without bloating the main
   skill text
@@ -112,6 +113,8 @@ commands instead of assuming that submission implies success.
 
 - venue discovery is CLI-backed and capability-filtered
 - swap quotes are live quote data with TTL/expiry metadata
+- prepared swap flows are available for supported venues
+- Curve LP preview/prepare/execute flows are available on `ethereum-mainnet`
 - supply preview/prepare/execute currently support `aave` only
 - DeFi supply execution is a multi-step flow that submits an `approve` step
   before the `supply` step
@@ -142,6 +145,8 @@ The architecture intentionally pushes side effects behind reviewable plan files.
 
 ## Known Gaps
 
-- no live swap execution path yet
 - no dry-run simulator for multi-step DeFi plans yet
+- supply flow remains `aave`-only
+- LP flows remain `curve`-only on `ethereum-mainnet`
+- no borrow or generic vault flows yet
 - no multisig or external signer backends yet

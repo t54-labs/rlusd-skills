@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- install `rlusd-cli` from the pushed `feat/skills-backend-migration` branch
+- install `rlusd-cli` from the `main` branch
 - set `RLUSD_WALLET_PASSWORD`
 - configure an Ethereum wallet in `~/.config/rlusd-cli/wallets`
 - set the Ethereum RPC in `~/.config/rlusd-cli/config.yml` if you are executing on chain

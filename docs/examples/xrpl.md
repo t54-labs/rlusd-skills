@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- install `rlusd-cli` from the pushed `feat/skills-backend-migration` branch
+- install `rlusd-cli` from the `main` branch
 - set `RLUSD_WALLET_PASSWORD`
 - configure an XRPL wallet in `~/.config/rlusd-cli/wallets`
 - use a valid XRPL classic address for all examples

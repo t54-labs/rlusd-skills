@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- install `rlusd-cli` from the pushed `feat/skills-backend-migration` branch
+- install `rlusd-cli` from the `main` branch
 - set `RLUSD_WALLET_PASSWORD`
 - configure an Ethereum wallet in `~/.config/rlusd-cli/wallets`
 - remember that `defi quote swap` is live quote data with a short TTL

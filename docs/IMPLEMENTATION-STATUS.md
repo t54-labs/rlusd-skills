@@ -1,18 +1,19 @@
 # RLUSD Skills Implementation Status
 
-- Last updated: 2026-03-25
+- Last updated: 2026-03-26
 - Scope: current repo state vs `docs/RLUSD-Skills-Implementation-Plan.md`
 
 ## Summary
 
-The repository now has eight RLUSD skill files, supporting reference material,
+The repository now has nine RLUSD skill files, supporting reference material,
 and repo docs retargeted to the external `rlusd-cli` runtime.
 
-The external CLI branch currently targeted for cutover is
-`feat/skills-backend-migration` at pinned commit `374a1b1`.
+The install guidance now points to the external `rlusd-cli` repository on
+`main`.
 
-The biggest remaining gap is now on the release side: pushing, reviewing, and
-landing the cutover branch once final docs QA is accepted.
+The biggest remaining gaps are now product-scope limits rather than cutover
+work: `aave`-only supply, `curve`-only LP flows on `ethereum-mainnet`, no
+borrow or generic vault flows, and no multisig or external signer backends.
 
 ## Phase Status
 
@@ -68,6 +69,11 @@ Implemented:
 - `use-rlusd-evm-defi`
 - external `defi venues`
 - external `defi quote swap`
+- external `defi swap prepare`
+- external `defi swap execute`
+- external `defi lp preview`
+- external `defi lp prepare`
+- external `defi lp execute`
 - external `defi supply preview`
 - external `defi supply prepare`
 - external `defi supply execute`
@@ -75,15 +81,17 @@ Implemented:
 Current scope notes:
 
 - swap quotes are live and time-limited
+- prepared swap execution is supported
+- Curve LP flows are `curve`-only on `ethereum-mainnet`
 - supply flow is `aave`-only
 - `defi supply execute` remains a reviewed multi-step `approve` then `supply` flow
 
 Still missing or narrowed:
 
 - no borrow preview
-- no LP/vault preview
+- no generic multi-venue LP/vault abstraction
 - no richer multi-venue lending abstraction
-- no swap execution path in the skills repo itself
+- no dry-run simulator for multi-step DeFi plans
 
 ### Phase 5
 
@@ -108,14 +116,15 @@ Implemented:
 
 Current skill files present:
 
-- `plugins/ripple/skills/use-rlusd/SKILL.md`
-- `plugins/ripple/skills/use-rlusd-ethereum/SKILL.md`
-- `plugins/ripple/skills/use-rlusd-xrpl/SKILL.md`
-- `plugins/ripple/skills/use-rlusd-evm-defi/SKILL.md`
-- `plugins/ripple/skills/buy-redeem-rlusd/SKILL.md`
-- `plugins/ripple/skills/rlusd-transfer/SKILL.md`
-- `plugins/ripple/skills/rlusd-trustline/SKILL.md`
-- `plugins/ripple/skills/rlusd-defi-action/SKILL.md`
+- `skills/use-rlusd/SKILL.md`
+- `skills/use-rlusd-ethereum/SKILL.md`
+- `skills/use-rlusd-xrpl/SKILL.md`
+- `skills/use-rlusd-evm-defi/SKILL.md`
+- `skills/rlusd-wallets/SKILL.md`
+- `skills/buy-redeem-rlusd/SKILL.md`
+- `skills/rlusd-transfer/SKILL.md`
+- `skills/rlusd-trustline/SKILL.md`
+- `skills/rlusd-defi-action/SKILL.md`
 
 Important note:
 
@@ -162,6 +171,11 @@ Important note:
 
 - external `defi venues`
 - external `defi quote swap`
+- external `defi swap prepare`
+- external `defi swap execute`
+- external `defi lp preview`
+- external `defi lp prepare`
+- external `defi lp execute`
 - external `defi supply preview`
 - external `defi supply prepare`
 - external `defi supply execute`
@@ -191,39 +205,39 @@ Completed in repo:
 
 Completed in repo:
 
-- `plugins/ripple/skills/use-rlusd-ethereum/references/contracts.md`
-- `plugins/ripple/skills/use-rlusd-ethereum/references/permit.md`
-- `plugins/ripple/skills/use-rlusd-ethereum/references/transfers.md`
-- `plugins/ripple/skills/use-rlusd-xrpl/references/trustlines.md`
-- `plugins/ripple/skills/use-rlusd-xrpl/references/issuer-settings.md`
-- `plugins/ripple/skills/use-rlusd-xrpl/references/payments.md`
-- `plugins/ripple/skills/use-rlusd-evm-defi/references/venues.md`
-- `plugins/ripple/skills/use-rlusd-evm-defi/references/routing.md`
-- `plugins/ripple/skills/use-rlusd-evm-defi/references/risk-model.md`
+- `skills/use-rlusd-ethereum/references/contracts.md`
+- `skills/use-rlusd-ethereum/references/permit.md`
+- `skills/use-rlusd-ethereum/references/transfers.md`
+- `skills/use-rlusd-xrpl/references/trustlines.md`
+- `skills/use-rlusd-xrpl/references/issuer-settings.md`
+- `skills/use-rlusd-xrpl/references/payments.md`
+- `skills/use-rlusd-evm-defi/references/venues.md`
+- `skills/use-rlusd-evm-defi/references/routing.md`
+- `skills/use-rlusd-evm-defi/references/risk-model.md`
 
 ## Remaining TODO
 
 ### Product Scope Still Narrowed
 
-- DeFi swap execution is not implemented in the skills repo
 - DeFi supply is `aave`-only
-- DeFi borrow/LP/vault flows are not implemented
+- DeFi LP flows are `curve`-only on `ethereum-mainnet`
+- DeFi borrow and generic vault flows are not implemented
+- multisig or external signer backends are not implemented
 - fiat commands are guidance-only and do not automate wires or onboarding
 
 ### Backlog Still Open
 
-- push and review the `rlusd-skills` cutover branch
-- create the matching PR after final QA is accepted
+- expand DeFi coverage beyond Aave supply and Curve LP workflows
+- add multisig or external signer support if the external CLI exposes it
 
 ## Verification Snapshot
 
 Most recently verified state before this doc was written:
 
-- `rlusd-cli` branch `feat/skills-backend-migration` pushed and synced with latest `origin/main`
-- pinned cutover commit available: `374a1b1`
-- `pnpm install` passed
+- user-facing install docs point to `rlusd-cli` on `main`
 - `pnpm test` passed
-- `pnpm typecheck` passed
+- `pnpm typecheck` passed (`rlusd-skills` is skills/docs-only; no local typecheck target)
+- `pnpm build` passed (`rlusd-skills` is skills/docs-only; no local build target)
 
 Important note:
 

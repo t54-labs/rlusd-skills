@@ -4,6 +4,7 @@
 - **Owner:** Engineering
 - **Last updated:** 2026-03-25
 - **Assumption:** This plan targets a local repo + CLI workflow with Claude-style skills, no MCP, and a mainnet-only initial scope.
+- **Historical cleanup:** 2026-03-26 — this draft predates the final repo flattening to `skills/` and the addition of `rlusd-wallets`; structure and command examples below are normalized to current repo conventions where that avoids confusion.
 
 ## 1. Build Strategy
 
@@ -16,7 +17,7 @@ Implement the product in **three layers**:
 This split is deliberate:
 
 - Circle's public skills repo is a plugin-hosted library of reusable skills rather than a monolithic SDK.[1]
-- Claude Code skills can be background-only or manual-only depending on frontmatter, which is ideal for separating reference guidance from side-effecting workflows.[2]
+- Claude Code skills can mix user-invocable and background-loading behavior depending on frontmatter and workflow design, which is ideal for separating reference guidance from side-effecting workflows.[2]
 - Ripple's RLUSD docs expose stable integration rules on Ethereum and XRPL, while the exact contract and issuer data belongs in a runtime-configurable layer.[3][4]
 
 ## 2. Recommended Tech Stack
@@ -48,66 +49,58 @@ Pin all blockchain SDK versions via lockfile and review advisories before releas
 ```text
 rlusd-skills/
 ├── .claude-plugin/
-│   └── marketplace.json
-├── plugins/
-│   └── ripple/
-│       ├── README.md
-│       └── skills/
-│           ├── use-rlusd/
-│           │   └── SKILL.md
-│           ├── use-rlusd-ethereum/
-│           │   ├── SKILL.md
-│           │   └── references/
-│           │       ├── contracts.md
-│           │       ├── permit.md
-│           │       └── transfers.md
-│           ├── use-rlusd-xrpl/
-│           │   ├── SKILL.md
-│           │   └── references/
-│           │       ├── trustlines.md
-│           │       ├── issuer-settings.md
-│           │       └── payments.md
-│           ├── use-rlusd-evm-defi/
-│           │   ├── SKILL.md
-│           │   └── references/
-│           │       ├── venues.md
-│           │       ├── routing.md
-│           │       └── risk-model.md
-│           ├── buy-redeem-rlusd/
-│           │   └── SKILL.md
-│           ├── rlusd-transfer/
-│           │   └── SKILL.md
-│           ├── rlusd-trustline/
-│           │   └── SKILL.md
-│           └── rlusd-defi-action/
-│               └── SKILL.md
-├── cli/
-│   └── rlusd/
-│       ├── package.json
-│       ├── src/
-│       │   ├── index.ts
-│       │   ├── commands/
-│       │   ├── adapters/
-│       │   ├── registry/
-│       │   ├── policy/
-│       │   ├── plans/
-│       │   ├── schemas/
-│       │   ├── wallets/
-│       │   └── utils/
-│       └── test/
-└── docs/
-    ├── examples/
-    ├── architecture.md
-    └── command-reference.md
+│   ├── marketplace.json
+│   └── plugin.json
+├── skills/
+│   ├── use-rlusd/
+│   │   └── SKILL.md
+│   ├── use-rlusd-ethereum/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       ├── contracts.md
+│   │       ├── permit.md
+│   │       └── transfers.md
+│   ├── use-rlusd-xrpl/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       ├── trustlines.md
+│   │       ├── issuer-settings.md
+│   │       └── payments.md
+│   ├── use-rlusd-evm-defi/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       ├── venues.md
+│   │       ├── routing.md
+│   │       └── risk-model.md
+│   ├── rlusd-wallets/
+│   │   └── SKILL.md
+│   ├── buy-redeem-rlusd/
+│   │   └── SKILL.md
+│   ├── rlusd-transfer/
+│   │   └── SKILL.md
+│   ├── rlusd-trustline/
+│   │   └── SKILL.md
+│   └── rlusd-defi-action/
+│       └── SKILL.md
+├── docs/
+│   ├── examples/
+│   ├── plans/
+│   ├── architecture.md
+│   ├── command-reference.md
+│   ├── RLUSD-Skills-Implementation-Plan.md
+│   └── RLUSD-Skills-PRD.md
+├── tests/
+├── README.md
+└── package.json
 ```
 
 ## 4. Skill Design
 
 ### 4.1 Skill Types
 
-Use two categories.
+Use three categories in the current repo layout.
 
-#### A. Background / routing / reference skills
+#### A. Routing / reference skills
 
 Use for:
 
@@ -123,13 +116,31 @@ Recommended frontmatter pattern:
 ---
 name: use-rlusd-ethereum
 description: RLUSD on EVM chains. Use for balances, transfers, approvals, permit, and DeFi routing.
-user-invocable: false
+user-invocable: true
 ---
 ```
 
-Rationale: these are background playbooks that Claude should be able to load automatically when relevant.[2]
+Rationale: the current repo keeps these explicitly invocable while still allowing the agent to load them automatically when relevant.[2]
 
-#### B. Manual-only action skills
+#### B. Wallet preflight skill
+
+Use for:
+
+- `rlusd-wallets`
+
+Recommended frontmatter pattern:
+
+```yaml
+---
+name: rlusd-wallets
+description: Inspect local `rlusd-cli` wallets before any wallet-backed RLUSD flow.
+user-invocable: true
+---
+```
+
+Rationale: wallet inspection and setup became a reusable step that multiple action skills depend on.
+
+#### C. Prepare-first action skills
 
 Use for:
 
@@ -143,11 +154,11 @@ Recommended frontmatter pattern:
 ---
 name: rlusd-transfer
 description: Prepare and execute an RLUSD transfer using the external `rlusd-cli` runtime.
-disable-model-invocation: true
+user-invocable: true
 ---
 ```
 
-Rationale: Claude docs explicitly recommend `disable-model-invocation: true` for workflows with side effects.[2]
+Rationale: the current repo keeps side-effect safety in the documented `prepare -> review -> execute` lifecycle rather than frontmatter-only gating.[2]
 
 ### 4.2 Skill Content Template
 
@@ -198,9 +209,9 @@ Responsibilities:
 
 Responsibilities:
 
-- handle venue discovery, route preview, supply/borrow preview, LP/vault preview;
+- handle venue discovery, live swap quotes, prepared swap flows, Aave supply flows, and Curve LP preview/prepare/execute;
 - enforce venue capability checks from registry;
-- distinguish preview from execution;
+- distinguish live quotes and previews from prepared execution flows;
 - warn when an action would require prior approval or permit;
 - keep venue specifics outside core skill prose.
 
@@ -216,27 +227,31 @@ Responsibilities:
 
 ### 5.1 Command Philosophy
 
-The CLI should be built around a tiny set of verbs with uniform semantics:
+The CLI should be built around stable namespaces with uniform JSON semantics:
 
 - `resolve`
-- `status`
-- `quote`
-- `preview`
+- `balance`
+- `eth allowance`
 - `prepare`
 - `execute`
 - `wait`
 - `receipt`
+- `wallet`
+- `config`
 
-This lets agents learn one execution grammar and reuse it everywhere.
+This lets agents learn one JSON envelope and one `prepare -> review -> execute` grammar while keeping read surfaces explicit.
 
 ### 5.2 Top-Level Namespaces
 
 ```bash
 rlusd resolve ...
+rlusd balance ...
+rlusd eth ...
 rlusd evm ...
 rlusd xrpl ...
 rlusd defi ...
 rlusd fiat ...
+rlusd wallet ...
 rlusd config ...
 ```
 
@@ -252,9 +267,9 @@ rlusd resolve asset --chain xrpl-mainnet --json
 #### EVM Read Path
 
 ```bash
-rlusd evm balance --chain ethereum-mainnet --address 0x... --json
-rlusd evm allowance --chain ethereum-mainnet --owner 0x... --spender 0x... --json
-rlusd evm tx receipt --hash 0x... --json
+rlusd balance --chain ethereum --address 0x... --json
+rlusd eth allowance --chain ethereum --owner-wallet ops --spender 0x... --json
+rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
 ```
 
 #### EVM Write Path
@@ -279,17 +294,20 @@ rlusd xrpl payment receipt --hash <txid> --json
 
 ```bash
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet treasury-xrpl --json
+rlusd xrpl trustline execute --plan <plan_path> --confirm-plan-id <plan_id> --json
 rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
-rlusd xrpl payment execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet treasury-xrpl --json
-rlusd xrpl tx wait --hash <txid> --json
+rlusd xrpl payment execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd xrpl tx wait --chain xrpl-mainnet --hash <txid> --json
 ```
 
 #### DeFi Preview / Execution
 
 ```bash
 rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json
-rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --json
+rlusd defi quote swap --chain ethereum-mainnet --venue curve --from RLUSD --to USDC --amount 1000 --json
+rlusd defi swap prepare --chain ethereum-mainnet --venue curve --from-wallet ops --from RLUSD --to USDC --amount 1000 --slippage 50 --json
+rlusd defi swap execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd defi lp preview --chain ethereum-mainnet --venue curve --operation add --rlusd-amount 1000 --usdc-amount 1000 --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
 rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 rlusd defi supply execute --plan <plan_path> --confirm-plan-id <plan_id> --json
@@ -583,8 +601,8 @@ Tasks:
 - author `use-rlusd-ethereum`
 - author `use-rlusd-xrpl`
 - implement `resolve asset`
-- implement `evm balance`
-- implement `evm allowance`
+- implement `balance`
+- implement `eth allowance`
 - implement `xrpl trustline status`
 - implement `xrpl account info`
 
@@ -632,21 +650,26 @@ Exit criteria:
 
 ### Phase 4 — EVM DeFi Preview + Action Layer
 
-**Goal:** support generalized RLUSD DeFi workflows.
+**Goal:** support the first production RLUSD DeFi workflows.
 
 Tasks:
 
 - author `use-rlusd-evm-defi`
 - implement `defi venues`
 - implement `defi quote swap`
+- implement `defi swap prepare`
+- implement `defi swap execute`
+- implement `defi lp preview`
+- implement `defi lp prepare`
+- implement `defi lp execute`
 - implement `defi supply preview`
 - implement `defi supply prepare`
-- optionally implement `defi supply execute`
+- implement `defi supply execute`
 - add venue registry and capability flags
 
 Exit criteria:
 
-- agent can preview RLUSD DeFi actions without protocol-specific prompt engineering
+- agent can discover RLUSD DeFi venues and prepare supported actions without protocol-specific prompt engineering
 - unsupported venues fail cleanly with actionable warnings
 
 ### Phase 5 — Institutional Guidance + Polish
@@ -714,7 +737,7 @@ Exit criteria:
 
 - lint frontmatter
 - verify all referenced commands exist
-- verify manual-only skills use `disable-model-invocation: true`
+- verify all skills keep side effects behind explicit `prepare -> review -> execute` flows
 - verify background skills do not include side-effecting command sequences without an explicit prepare step
 
 ## 13. Documentation Deliverables

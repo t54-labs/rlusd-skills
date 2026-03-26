@@ -3,6 +3,7 @@
 - **Status:** Draft v1.0
 - **Owner:** Product / Engineering
 - **Last updated:** 2026-03-24
+- **Historical cleanup:** 2026-03-26 — this PRD predates the final repo flattening to `skills/` and the addition of `rlusd-wallets`; scope and structure notes below are normalized where doing so avoids confusion.
 
 ## 1. Executive Summary
 
@@ -27,9 +28,9 @@ The initial product will **not** implement MCP integration. It will also **not**
 Circle's public skills repository packages reusable development guidance as plugin-hosted skills under `plugins/<vendor>/skills/*`, combining stable decision logic with references and optional scripts.[4] Claude Code's skills model explicitly supports:
 
 - plugin-scoped skills,
-- background/reference skills,
-- manual-only skills for side effects via `disable-model-invocation: true`, and
-- hidden background skills via `user-invocable: false`.[5]
+- user-invocable skills,
+- automatically loaded routing/reference skills, and
+- hidden background skills where appropriate.[5]
 
 RLUSD is currently documented by Ripple as a stablecoin available on **Ethereum** and the **XRP Ledger (XRPL)**.[6] On Ethereum, RLUSD is an **ERC-20** token that uses a **proxy upgrade pattern** and should be integrated through the **proxy contract address**, with **18 decimals** on documented Ethereum deployments; the current product scope only requires Mainnet recognition.[7] On XRPL, RLUSD uses the ledger's native **Issued Tokens** model and requires a **trust line** for holders to receive, hold, and transfer the asset.[8][9]
 
@@ -141,14 +142,17 @@ A developer who wants Claude Code or a similar AI agent to inspect balances, pla
    - issuer model, trust line checks, TrustSet, Payment, destination-tag awareness
 
 4. `use-rlusd-evm-defi`
-   - swaps, lending, LP/vault routing patterns, risk checks, venue abstraction
+   - live swap quotes, prepared swap flows, Aave supply flows, Curve LP routing patterns, risk checks, venue abstraction
 
-5. optional manual-only task skills for side effects
+5. `rlusd-wallets`
+   - wallet preflight for local aliases, default wallet inspection, and setup guidance
+
+6. prepare-first task skills for side effects
    - `rlusd-transfer`
    - `rlusd-trustline`
    - `rlusd-defi-action`
 
-6. `buy-redeem-rlusd`
+7. `buy-redeem-rlusd`
    - reference skill documenting onboarding, bank-account, wallet-ID, and wire-flow requirements
    - guidance only in v1, not full execution automation
 
@@ -157,10 +161,13 @@ A developer who wants Claude Code or a similar AI agent to inspect balances, pla
 An external `rlusd-cli` runtime supporting:
 
 - `resolve`
-- `read`/`status`/`quote`/`preview`
+- `balance` and `eth allowance`
+- XRPL trust-line/account read commands
+- DeFi quote and preview commands
 - `prepare`
 - `execute`
 - `wait`/`receipt`
+- `wallet` and `config`
 
 #### Registry / Runtime Truth
 
@@ -221,19 +228,22 @@ The repo must support plugin-style skills consistent with the Circle-style layou
 Minimum structure:
 
 ```text
-plugins/
-  ripple/
-    skills/
-      use-rlusd/
-      use-rlusd-ethereum/
-      use-rlusd-xrpl/
-      use-rlusd-evm-defi/
-      buy-redeem-rlusd/
-      rlusd-transfer/
-      rlusd-trustline/
-      rlusd-defi-action/
-cli/
-  rlusd
+.claude-plugin/
+skills/
+  use-rlusd/
+  use-rlusd-ethereum/
+  use-rlusd-xrpl/
+  use-rlusd-evm-defi/
+  rlusd-wallets/
+  buy-redeem-rlusd/
+  rlusd-transfer/
+  rlusd-trustline/
+  rlusd-defi-action/
+docs/
+  examples/
+tests/
+README.md
+package.json
 ```
 
 ### 11.2 Skill Requirements
@@ -244,8 +254,8 @@ Each skill must:
 - distinguish read-only guidance from side-effecting workflows;
 - include chain-specific decision rules;
 - point agents to CLI commands instead of embedding stale constants;
-- use `disable-model-invocation: true` for any skill that can trigger side effects;
-- use `user-invocable: false` for background-routing/reference skills where appropriate.[5]
+- keep side-effect safety in documented `prepare -> review -> execute` flows rather than frontmatter-only gating;
+- use `user-invocable: true` for operator-facing skills and reserve `user-invocable: false` for intentionally hidden helpers only.[5]
 
 ### 11.3 CLI Contract Requirements
 
@@ -285,8 +295,9 @@ The toolkit must support current RLUSD XRPL assumptions from Ripple docs:
 The product must support **pattern-based** DeFi workflows rather than protocol-per-skill sprawl:
 
 - swap routing,
-- supply/borrow previews,
-- LP/vault entry/exit previews,
+- live swap quotes plus prepared swap execution for supported venues,
+- Aave supply preview/prepare/execute,
+- Curve LP preview/prepare/execute on `ethereum-mainnet`,
 - venue discovery,
 - policy warnings about collateral eligibility, slippage, approvals, and unsupported venues.
 

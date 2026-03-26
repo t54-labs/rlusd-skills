@@ -1,8 +1,7 @@
 # RLUSD Skills
 
 `rlusd-skills` packages RLUSD-focused agent skills and docs. The canonical
-runtime is now the external `rlusd-cli` branch
-`feat/skills-backend-migration`, currently pinned for cutover at `374a1b1`.
+runtime is now the external `rlusd-cli` repository on `main`.
 
 ## What Is Implemented
 
@@ -12,7 +11,8 @@ runtime is now the external `rlusd-cli` branch
 - deterministic prepared-plan files stored under `~/.config/rlusd-cli/plans`
 - EVM read, prepare, execute, wait, and receipt commands
 - XRPL trust-line, payment, wait, and receipt commands
-- DeFi venue discovery, live swap quotes, and Aave supply prepare/execute
+- DeFi venue discovery, live swap quotes, prepared swap flows, Curve LP flows, and Aave supply prepare/execute
+- local wallet inspection and selection via the `rlusd-wallets` skill
 - fiat onboarding, buy, and redeem guidance commands
 
 ## Current Constraints
@@ -62,8 +62,8 @@ Install the external CLI separately:
 ```bash
 git clone https://github.com/t54-labs/rlusd-cli.git
 cd rlusd-cli
-git checkout feat/skills-backend-migration
-git rev-parse HEAD   # should match 374a1b1 unless the cutover plan explicitly updates the pin
+git checkout main
+git rev-parse HEAD   # optional: record the exact CLI revision you are testing against
 npm install
 npm run build
 ```
@@ -171,6 +171,7 @@ on `ethereum-mainnet`.
 | Skill | Command | When to use |
 | :--- | :--- | :--- |
 | **use-rlusd** | (auto-routed) | Route RLUSD requests to the correct chain workflow |
+| **rlusd-wallets** | `/ripple:rlusd-wallets` | Inspect or set up local RLUSD wallet aliases before wallet-backed flows |
 | **use-rlusd-ethereum** | `/ripple:use-rlusd-ethereum` | Ethereum-specific RLUSD guidance |
 | **use-rlusd-xrpl** | `/ripple:use-rlusd-xrpl` | XRPL-specific RLUSD guidance |
 | **use-rlusd-evm-defi** | `/ripple:use-rlusd-evm-defi` | EVM DeFi venue discovery and swap quotes |

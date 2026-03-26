@@ -8,13 +8,15 @@
 
 **Tech Stack:** Markdown skills, pnpm workspace, Claude plugin metadata, repo docs
 
+> **Historical note (2026-03-26 cleanup):** This plan was drafted before the cutover landed. The branch name and sequencing remain historical, but file paths and cross-repo CLI references below have been normalized to the current repo layout and the current `rlusd-cli` `main` branch where that avoids confusion.
+
 ---
 
 ## Branch And Sequencing
 
 **Branch:** `feat/rlusd-cli-cutover`
 
-**Merge dependency:** Start this branch only after `rlusd-cli` branch `feat/skills-backend-migration` is pushed and testable locally.
+**Merge dependency:** Start this branch only after the required `rlusd-cli` changes are available and testable locally. Current install and validation guidance assumes `rlusd-cli` on `main`.
 
 **Push rule:** Push after every checkpoint commit so docs review and plugin QA can happen incrementally.
 
@@ -23,12 +25,12 @@
 ### Task 1: Update the routing skill to the new CLI contract
 
 **Files:**
-- Modify: `plugins/ripple/skills/use-rlusd/SKILL.md`
-- Modify: `plugins/ripple/skills/use-rlusd-ethereum/SKILL.md`
-- Modify: `plugins/ripple/skills/use-rlusd-xrpl/SKILL.md`
-- Modify: `plugins/ripple/skills/use-rlusd-evm-defi/SKILL.md`
-- Modify: `plugins/ripple/skills/buy-redeem-rlusd/SKILL.md`
-- Modify: `plugins/ripple/README.md`
+- Modify: `skills/use-rlusd/SKILL.md`
+- Modify: `skills/use-rlusd-ethereum/SKILL.md`
+- Modify: `skills/use-rlusd-xrpl/SKILL.md`
+- Modify: `skills/use-rlusd-evm-defi/SKILL.md`
+- Modify: `skills/buy-redeem-rlusd/SKILL.md`
+- Modify: `README.md`
 
 **Step 1: Rewrite the command sequences**
 
@@ -43,13 +45,13 @@ Change `defi quote swap` from static preview wording to live-quote wording with 
 
 **Step 3: Validate command references manually**
 
-Check that every command named in the markdown exists on the `rlusd-cli` migration branch.
+Check that every command named in the markdown exists on the supported `rlusd-cli` branch (now `main`).
 
 **Step 4: Commit and push**
 
 ```bash
 git checkout -b feat/rlusd-cli-cutover
-git add plugins/ripple/skills/use-rlusd/SKILL.md plugins/ripple/skills/use-rlusd-ethereum/SKILL.md plugins/ripple/skills/use-rlusd-xrpl/SKILL.md plugins/ripple/skills/use-rlusd-evm-defi/SKILL.md plugins/ripple/skills/buy-redeem-rlusd/SKILL.md plugins/ripple/README.md
+git add skills/use-rlusd/SKILL.md skills/use-rlusd-ethereum/SKILL.md skills/use-rlusd-xrpl/SKILL.md skills/use-rlusd-evm-defi/SKILL.md skills/buy-redeem-rlusd/SKILL.md README.md
 git commit -m "docs: retarget routing skills to rlusd-cli"
 git push -u origin feat/rlusd-cli-cutover
 ```
@@ -59,16 +61,16 @@ git push -u origin feat/rlusd-cli-cutover
 ### Task 2: Update the action skills to explicit local-wallet flows
 
 **Files:**
-- Modify: `plugins/ripple/skills/rlusd-transfer/SKILL.md`
-- Modify: `plugins/ripple/skills/rlusd-trustline/SKILL.md`
-- Modify: `plugins/ripple/skills/rlusd-defi-action/SKILL.md`
-- Modify: `plugins/ripple/skills/use-rlusd-ethereum/references/transfers.md`
-- Modify: `plugins/ripple/skills/use-rlusd-ethereum/references/permit.md`
-- Modify: `plugins/ripple/skills/use-rlusd-xrpl/references/trustlines.md`
-- Modify: `plugins/ripple/skills/use-rlusd-xrpl/references/payments.md`
-- Modify: `plugins/ripple/skills/use-rlusd-evm-defi/references/routing.md`
-- Modify: `plugins/ripple/skills/use-rlusd-evm-defi/references/risk-model.md`
-- Modify: `plugins/ripple/skills/use-rlusd-evm-defi/references/venues.md`
+- Modify: `skills/rlusd-transfer/SKILL.md`
+- Modify: `skills/rlusd-trustline/SKILL.md`
+- Modify: `skills/rlusd-defi-action/SKILL.md`
+- Modify: `skills/use-rlusd-ethereum/references/transfers.md`
+- Modify: `skills/use-rlusd-ethereum/references/permit.md`
+- Modify: `skills/use-rlusd-xrpl/references/trustlines.md`
+- Modify: `skills/use-rlusd-xrpl/references/payments.md`
+- Modify: `skills/use-rlusd-evm-defi/references/routing.md`
+- Modify: `skills/use-rlusd-evm-defi/references/risk-model.md`
+- Modify: `skills/use-rlusd-evm-defi/references/venues.md`
 
 **Step 1: Replace old execution examples**
 
@@ -90,7 +92,7 @@ Ensure:
 **Step 3: Commit and push**
 
 ```bash
-git add plugins/ripple/skills/rlusd-transfer/SKILL.md plugins/ripple/skills/rlusd-trustline/SKILL.md plugins/ripple/skills/rlusd-defi-action/SKILL.md plugins/ripple/skills/use-rlusd-ethereum/references/transfers.md plugins/ripple/skills/use-rlusd-ethereum/references/permit.md plugins/ripple/skills/use-rlusd-xrpl/references/trustlines.md plugins/ripple/skills/use-rlusd-xrpl/references/payments.md plugins/ripple/skills/use-rlusd-evm-defi/references/routing.md plugins/ripple/skills/use-rlusd-evm-defi/references/risk-model.md plugins/ripple/skills/use-rlusd-evm-defi/references/venues.md
+git add skills/rlusd-transfer/SKILL.md skills/rlusd-trustline/SKILL.md skills/rlusd-defi-action/SKILL.md skills/use-rlusd-ethereum/references/transfers.md skills/use-rlusd-ethereum/references/permit.md skills/use-rlusd-xrpl/references/trustlines.md skills/use-rlusd-xrpl/references/payments.md skills/use-rlusd-evm-defi/references/routing.md skills/use-rlusd-evm-defi/references/risk-model.md skills/use-rlusd-evm-defi/references/venues.md
 git commit -m "docs: update action skills for local wallet prepare flows"
 git push
 ```
@@ -243,7 +245,7 @@ git push
 ## Cross-Repo Cutover Checklist
 
 Before merging this branch, confirm:
-- `rlusd-cli` branch `feat/skills-backend-migration` is merged or pinned for testing
+- required `rlusd-cli` changes are merged into `main` or otherwise pinned for testing
 - all skill markdown examples were manually smoke-checked against the new CLI
 - docs no longer mention `cli/rlusd/dist/index.js`
 - skill examples use explicit local-wallet flags
