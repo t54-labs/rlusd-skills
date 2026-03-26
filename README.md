@@ -5,7 +5,7 @@ runtime is now the external `rlusd-cli` repository on `main`.
 
 ## What Is Implemented
 
-- RLUSD routing skills for Ethereum, XRPL, DeFi, and institutional guidance
+- RLUSD routing skills for Ethereum, XRPL, DeFi, and fiat guidance
 - an external `rlusd-cli` runtime with JSON output for every command
 - registry-backed RLUSD metadata for Ethereum Mainnet and XRPL Mainnet
 - deterministic prepared-plan files stored under `~/.config/rlusd-cli/plans`
@@ -22,7 +22,8 @@ runtime is now the external `rlusd-cli` repository on `main`.
 - DeFi swap quotes are live and expire on a short TTL
 - DeFi supply preview remains preview-only guidance
 - DeFi supply execution is `aave`-only
-- fiat commands are guidance-only and do not automate Ripple onboarding or wires
+- fiat commands are guidance-only and do not automate provider onboarding,
+  payment method setup, or redemption submission
 
 ## Installation
 
@@ -153,7 +154,9 @@ venue from the stored plan. Use `--venue uniswap` when fee-tier selection
 matters, and use `--venue curve` for the fixed Ethereum mainnet RLUSD/USDC
 pool. The top-level `defi` surface also includes `defi swap prepare|execute`
 and `defi lp preview|prepare|execute` for prepared swap and Curve LP workflows
-on `ethereum-mainnet`.
+on `ethereum-mainnet`. Top-level read and wallet commands may also use family
+aliases such as `ethereum` and `xrpl`, while network-scoped action flows use
+the bundled keys `ethereum-mainnet` and `xrpl-mainnet`.
 
 ## Documentation
 

@@ -20,7 +20,7 @@ present.
 
 ```bash
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet treasury-xrpl --json
+rlusd xrpl trustline execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash <tx_hash> --json
 ```
 

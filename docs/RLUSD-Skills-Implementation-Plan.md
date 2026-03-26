@@ -182,7 +182,7 @@ Responsibilities:
 - detect chain from prompt artifacts:
   - `0x...`, allowance, permit, approve, Uniswap, Aave -> EVM
   - `r...`, trust line, destination tag, TrustSet -> XRPL
-  - bank account, wire, redeem, onboarding -> institutional/reference flow
+  - bank account, provider, redeem, onboarding -> fiat/reference flow
 - map the intent to read / preview / prepare / execute
 - load a more specific skill
 - enforce the rule that all writes go through `prepare` first
@@ -221,7 +221,8 @@ Responsibilities:
 
 - explain onboarding steps, approved bank account requirements, wallet IDs, and chain-specific prerequisites like XRPL trust lines;[10][11][12]
 - provide operator checklists and instruction surfaces;
-- explicitly state that v1 does not automate bank-wire submission.
+- explicitly state that v1 does not automate provider enrollment, payment-method
+  setup, or redemption submission.
 
 ## 5. CLI Design
 
@@ -276,9 +277,9 @@ rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
 
 ```bash
 rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
-rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
-rlusd evm approve execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd evm approve execute --plan <plan_path> --confirm-plan-id <plan_id> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd evm tx wait --hash 0x... --json
 ```
 
@@ -294,9 +295,9 @@ rlusd xrpl payment receipt --hash <txid> --json
 
 ```bash
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd xrpl trustline execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet <wallet_name> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
-rlusd xrpl payment execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd xrpl payment execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet <wallet_name> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash <txid> --json
 ```
 
@@ -306,14 +307,14 @@ rlusd xrpl tx wait --chain xrpl-mainnet --hash <txid> --json
 rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json
 rlusd defi quote swap --chain ethereum-mainnet --venue curve --from RLUSD --to USDC --amount 1000 --json
 rlusd defi swap prepare --chain ethereum-mainnet --venue curve --from-wallet ops --from RLUSD --to USDC --amount 1000 --slippage 50 --json
-rlusd defi swap execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd defi swap execute --plan <plan_path> --confirm-plan-id <plan_id> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd defi lp preview --chain ethereum-mainnet --venue curve --operation add --rlusd-amount 1000 --usdc-amount 1000 --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
 rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
-rlusd defi supply execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd defi supply execute --plan <plan_path> --confirm-plan-id <plan_id> --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
-#### Fiat / Institutional Guidance
+#### Fiat Guidance
 
 ```bash
 rlusd fiat onboarding checklist --json
@@ -375,7 +376,7 @@ Every command must:
   "warnings": ["mainnet", "real_funds"],
   "next": [
     {
-      "command": "rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --json"
+      "command": "rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --password \"$RLUSD_WALLET_PASSWORD\" --json"
     }
   ]
 }

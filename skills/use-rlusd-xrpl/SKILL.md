@@ -40,9 +40,9 @@ rlusd resolve asset --chain xrpl-mainnet --json
 rlusd xrpl trustline status --chain xrpl-mainnet --address r... --json
 rlusd xrpl account info --chain xrpl-mainnet --address r... --json
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
+rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
-rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
+rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 ```
@@ -51,7 +51,8 @@ Use the output to confirm:
 
 - `symbol` is `RLUSD`
 - `issuer` matches the RLUSD issuer account
-- `currency` is `RLUSD`
+- use `symbol` as the human-readable RLUSD identity check; XRPL `currency`
+  output may be encoded rather than the literal string `RLUSD`
 - trust-line status returns structured `account_exists` and `has_trustline`
   fields, even when no trust line exists yet
 - trust-line status and account reads use the same issuer-backed registry metadata
@@ -66,6 +67,12 @@ Use the output to confirm:
   a recoverable transfer error.
 - Do not assume the XRPL account address is the same thing as the local signer
   wallet alias; use `rlusd-wallets` before wallet-backed action steps.
+- Execute examples pass `--password "$RLUSD_WALLET_PASSWORD"` explicitly for
+  predictability; the CLI can also read `RLUSD_WALLET_PASSWORD` from the
+  environment.
+- Examples pass `--chain xrpl-mainnet` for predictability. On the current CLI
+  surface, some help output may only list `--address`, but `--chain` is still
+  accepted via the global flag.
 - If a network or issuer value is absent from the registry, extend the registry
   rather than guessing live XRPL metadata.
 - Treat `prepare` output as a review artifact. Do not skip directly to execution

@@ -84,13 +84,16 @@ Returned plan data includes:
 Execute a prepared RLUSD transfer.
 
 ```bash
-rlusd evm transfer execute --plan <path> [--confirm-plan-id <plan_id>] --json
+rlusd evm transfer execute --plan <path> [--confirm-plan-id <plan_id>] --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 Notes:
 
 - loads and validates the stored plan
 - resolves the sender wallet from `rlusd-cli` local wallet storage
+- pass `--password "$RLUSD_WALLET_PASSWORD"` explicitly for agent-friendly
+  execution examples; the CLI can also read `RLUSD_WALLET_PASSWORD` from the
+  environment
 - returns the submitted `tx_hash`
 
 ### `evm approve prepare`
@@ -106,7 +109,7 @@ rlusd evm approve prepare --chain <chain> --owner-wallet <wallet_name> --spender
 Execute a prepared RLUSD approval.
 
 ```bash
-rlusd evm approve execute --plan <path> [--confirm-plan-id <plan_id>] --json
+rlusd evm approve execute --plan <path> [--confirm-plan-id <plan_id>] --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 ### `evm tx wait`
@@ -142,6 +145,10 @@ Read RLUSD trust-line state for an XRPL account.
 rlusd xrpl trustline status --chain <chain> --address <r-address> --json
 ```
 
+Examples in this repo pass `--chain xrpl-mainnet` for predictability. On the
+current CLI surface, some CLI help output may only list `--address`, but
+`--chain` is still accepted via the global flag.
+
 Returns structured status data including:
 
 - `address`
@@ -174,7 +181,7 @@ Returned plan data includes:
 Execute a prepared RLUSD trust-line plan.
 
 ```bash
-rlusd xrpl trustline execute --plan <path> [--confirm-plan-id <plan_id>] --json
+rlusd xrpl trustline execute --plan <path> [--confirm-plan-id <plan_id>] --wallet <wallet_name> --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 ### `xrpl account info`
@@ -205,7 +212,7 @@ Notes:
 Execute a prepared RLUSD payment plan.
 
 ```bash
-rlusd xrpl payment execute --plan <path> [--confirm-plan-id <plan_id>] --json
+rlusd xrpl payment execute --plan <path> [--confirm-plan-id <plan_id>] --wallet <wallet_name> --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 ### `xrpl tx wait`
@@ -302,7 +309,7 @@ Notes:
 Execute a prepared DeFi swap plan.
 
 ```bash
-rlusd defi swap execute --plan <path> [--confirm-plan-id <plan_id>] --json
+rlusd defi swap execute --plan <path> [--confirm-plan-id <plan_id>] --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 Returns submitted step hashes for each stored step.
@@ -343,7 +350,7 @@ Current behavior:
 Execute a prepared Curve LP plan.
 
 ```bash
-rlusd defi lp execute --plan <path> [--confirm-plan-id <plan_id>] --json
+rlusd defi lp execute --plan <path> [--confirm-plan-id <plan_id>] --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 Returns submitted step hashes for each stored step.
@@ -378,7 +385,7 @@ Current behavior:
 Execute a prepared multi-step DeFi supply plan.
 
 ```bash
-rlusd defi supply execute --plan <path> [--confirm-plan-id <plan_id>] --json
+rlusd defi supply execute --plan <path> [--confirm-plan-id <plan_id>] --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 Returns submitted step hashes for each stored step.
@@ -424,6 +431,12 @@ Bundled registry entries:
 
 - `ethereum-mainnet`
 - `xrpl-mainnet`
+
+Some top-level read and wallet commands also accept family aliases such as
+`ethereum` and `xrpl`. Examples in this repo follow each subcommand's help
+surface: top-level reads often use the family alias, while network-scoped
+prepare, execute, wait, and receipt flows use `ethereum-mainnet` or
+`xrpl-mainnet`.
 
 ## Important Error Codes
 

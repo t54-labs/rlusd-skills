@@ -39,7 +39,7 @@ line on XRPL.
 ```bash
 rlusd xrpl trustline status --chain xrpl-mainnet --address r... --json
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
+rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 ```
 
@@ -48,6 +48,12 @@ rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 - Trust-line changes are on-chain state changes and should be reviewed before
   execution.
 - Mainnet trust-line execution requires explicit confirmation.
+- Execute examples pass `--password "$RLUSD_WALLET_PASSWORD"` explicitly for
+  predictability; the CLI can also read `RLUSD_WALLET_PASSWORD` from the
+  environment.
+- Examples pass `--chain xrpl-mainnet` for predictability. On the current CLI
+  surface, some help output may only list `--address`, but `--chain` is still
+  accepted via the global flag.
 - Do not assume an XRPL account address or the example alias `treasury-xrpl` is
   already configured as a local signer; use `rlusd-wallets` first.
 - A trust line is distinct from an XRPL payment; it is a prerequisite, not the

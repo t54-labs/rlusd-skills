@@ -4,7 +4,7 @@
 
 ```bash
 rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
-rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd evm transfer execute --plan <plan_path> --confirm-plan-id <plan_id> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
 rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
 ```
@@ -20,7 +20,7 @@ The prepared transfer includes:
 
 ```bash
 rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
-rlusd evm approve execute --plan <plan_path> --confirm-plan-id <plan_id> --json
+rlusd evm approve execute --plan <plan_path> --confirm-plan-id <plan_id> --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 ## Safety Rules

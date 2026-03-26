@@ -17,7 +17,8 @@ Expected highlights:
 
 - `symbol = RLUSD`
 - `issuer` is present
-- `currency = RLUSD`
+- use `symbol = RLUSD` as the human-readable identity check
+- `currency` may be returned as XRPL-encoded RLUSD metadata
 
 ## Check Trust-Line Status
 

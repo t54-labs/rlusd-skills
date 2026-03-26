@@ -4,7 +4,7 @@
 
 ```bash
 rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
-rlusd xrpl payment execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet treasury-xrpl --json
+rlusd xrpl payment execute --plan <plan_path> --confirm-plan-id <plan_id> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash <tx_hash> --json
 rlusd xrpl payment receipt --chain xrpl-mainnet --hash <tx_hash> --json
 ```

@@ -19,7 +19,7 @@ current contract metadata or when the workflow depends on ERC-20 behavior.
 # Do Not Use This Skill When
 
 - The task is about XRPL trust lines or destination tags.
-- The request is about Ripple bank-wire or onboarding flows.
+- The request is about provider onboarding or fiat buy/redeem guidance.
 - The task is specifically about DeFi venue discovery or swap previews; use
   `use-rlusd-evm-defi` instead.
 
@@ -45,11 +45,11 @@ rlusd resolve asset --chain ethereum-mainnet --json
 rlusd balance --chain ethereum --address 0x... --json
 rlusd eth allowance --chain ethereum --owner-wallet ops --spender 0x... --json
 rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
-rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
 rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
 rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
-rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 Use the output to confirm:
@@ -70,8 +70,14 @@ Use the output to confirm:
   them.
 - Do not use legacy `rlusd evm balance` or `rlusd evm allowance` examples with
   the current CLI surface.
+- Top-level reads such as `balance`, `eth allowance`, and `wallet` commands use
+  the family alias `ethereum`, while network-scoped action flows use
+  `ethereum-mainnet`.
 - Do not assume the example wallet alias `ops` already exists locally; check it
   with `rlusd-wallets` before any wallet-backed action.
+- Execute examples pass `--password "$RLUSD_WALLET_PASSWORD"` explicitly for
+  predictability; the CLI can also read `RLUSD_WALLET_PASSWORD` from the
+  environment.
 - If the user asks for Sepolia and the registry does not have it yet, stop and
   add the registry entry rather than guessing the deployment.
 - Treat `prepare` output as a review artifact. Do not skip directly to execution

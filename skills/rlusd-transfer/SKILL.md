@@ -40,15 +40,15 @@ through the action workflow rather than just inspect metadata or balances.
 
 ```bash
 rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
-rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
 
 rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
-rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
 
 rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
-rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
+rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 ```
@@ -59,6 +59,9 @@ rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 - Ethereum and XRPL mainnet execution requires explicit confirmation.
 - Do not assume example wallet aliases like `ops` or `treasury-xrpl` already
   exist locally; use `rlusd-wallets` before wallet-backed transfer steps.
+- Execute examples pass `--password "$RLUSD_WALLET_PASSWORD"` explicitly for
+  predictability; the CLI can also read `RLUSD_WALLET_PASSWORD` from the
+  environment.
 - XRPL payment execution depends on the destination account already having a
   trust line when RLUSD is required there. The RLUSD issuer account does not
   require an inbound trust line.

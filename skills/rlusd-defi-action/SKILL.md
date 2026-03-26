@@ -22,7 +22,7 @@ and submission side of the flow after discovery is complete.
   previews; use `use-rlusd-evm-defi`.
 - The task is about direct Ethereum token transfer/approval or XRPL trust-line
   and payment flows.
-- The task is about institutional buy/redeem guidance.
+- The task is about fiat buy/redeem guidance.
 
 # Decision Guide
 
@@ -56,13 +56,13 @@ and submission side of the flow after discovery is complete.
 ```bash
 rlusd defi venues --chain ethereum-mainnet --capability swap,lp,lend --json
 rlusd defi swap prepare --chain ethereum-mainnet --venue curve --from-wallet ops --from RLUSD --to USDC --amount 1000 --slippage 50 --json
-rlusd defi swap execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd defi swap execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd defi lp preview --chain ethereum-mainnet --venue curve --operation add --rlusd-amount 1000 --usdc-amount 1000 --json
 rlusd defi lp prepare --chain ethereum-mainnet --venue curve --operation remove --from-wallet ops --lp-amount 50 --receive-token RLUSD --json
-rlusd defi lp execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd defi lp execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
 rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
-rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 ```
 
 # Common Warnings
@@ -90,6 +90,9 @@ rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <pla
   `rlusd-wallets` before wallet-backed prepare or execute steps.
 - Mainnet DeFi execution requires explicit confirmation using the prepared
   `plan_id`.
+- Execute examples pass `--password "$RLUSD_WALLET_PASSWORD"` explicitly for
+  predictability; the CLI can also read `RLUSD_WALLET_PASSWORD` from the
+  environment.
 
 # Examples
 

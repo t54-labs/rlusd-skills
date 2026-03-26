@@ -30,8 +30,8 @@ task belongs to Ethereum or XRPL.
   LP, vault, or broader DeFi routing questions on EVM chains.
 - Route to `use-rlusd-xrpl` for `r...` addresses, `trust line`, `TrustSet`,
   `destination tag`, or issuer-model questions.
-- Route to `buy-redeem-rlusd` for onboarding, bank accounts, wire references,
-  or direct institutional buy/redeem questions.
+- Route to `buy-redeem-rlusd` for onboarding, provider/rail guidance, bank
+  account questions, or direct fiat buy/redeem guidance.
 - Route to `rlusd-transfer` for explicit reviewed RLUSD transfer/payment action
   flows.
 - Route to `rlusd-trustline` for explicit reviewed XRPL trust-line creation or
@@ -66,7 +66,7 @@ task belongs to Ethereum or XRPL.
    with an explicit confirmation that matches the prepared plan id.
 7. For chain-specific post-submit status, use `evm tx ...` or `xrpl tx ...`
    commands plus chain-specific receipt commands.
-8. For institutional onboarding, direct buy, and redeem guidance, use the `fiat`
+8. For fiat onboarding, direct buy, and redeem guidance, use the `fiat`
    namespace.
 9. For XRPL reads, planning, execution, and receipts, use the `xrpl` namespace.
 10. Load the matching child skill before attempting chain-specific reasoning.
@@ -78,22 +78,22 @@ rlusd defi quote swap --chain ethereum-mainnet --venue curve --from RLUSD --to U
 rlusd defi quote swap --chain ethereum-mainnet --venue uniswap --from RLUSD --to USDC --amount 1000 --fee-tier 100 --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
 rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
-rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd balance --chain ethereum --address 0x... --json
 rlusd eth allowance --chain ethereum --owner-wallet ops --spender 0x... --json
 rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
-rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
 rlusd evm tx receipt --chain ethereum-mainnet --hash 0x... --json
 rlusd evm approve prepare --chain ethereum-mainnet --owner-wallet ops --spender 0x... --amount 1000 --json
-rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
+rlusd evm approve execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd resolve asset --chain xrpl-mainnet --json
 rlusd xrpl trustline status --chain xrpl-mainnet --address r... --json
 rlusd xrpl account info --chain xrpl-mainnet --address r... --json
 rlusd xrpl trustline prepare --chain xrpl-mainnet --address r... --limit 100000 --json
-rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
+rlusd xrpl trustline execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to r... --amount 250 --json
-rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --json
+rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 rlusd fiat onboarding checklist --json
@@ -107,8 +107,14 @@ rlusd fiat redeem instructions --json
 - Ethereum RLUSD must use the proxy contract, not the implementation contract.
 - XRPL flows depend on issuer and trust-line semantics and should not be treated
   like ERC-20 transfers.
+- Top-level reads such as `balance`, `eth allowance`, and `wallet` commands use
+  family aliases `ethereum` and `xrpl`, while network-scoped commands use
+  `ethereum-mainnet` and `xrpl-mainnet`.
 - Do not assume example wallet aliases like `ops` or `treasury-xrpl` already
   exist locally; use `rlusd-wallets` first when a flow depends on them.
+- Execute examples in this repo pass `--password "$RLUSD_WALLET_PASSWORD"`
+  explicitly for predictability, even though the CLI can also read the same
+  secret from the environment.
 - `defi quote swap` is live quote data and should be described with quote
   freshness metadata such as `quoted_at`, `ttl_seconds`, and `expires_at`.
 - `defi quote swap` defaults to Uniswap fee tier `3000`; retry `100`, `500`,

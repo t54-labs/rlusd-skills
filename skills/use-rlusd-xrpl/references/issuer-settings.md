@@ -8,10 +8,12 @@ Resolve the bundled XRPL metadata with:
 rlusd resolve asset --chain xrpl-mainnet --json
 ```
 
-The current registry should return:
+The current registry should return output where:
 
+- `symbol = RLUSD`
 - `issuer = rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De`
-- `currency = RLUSD`
+- `currency` may be XRPL-encoded in CLI output, so do not use it as the
+  human-readable RLUSD identity check
 
 ## Why Issuer Metadata Matters
 

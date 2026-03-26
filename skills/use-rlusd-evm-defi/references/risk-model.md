@@ -21,7 +21,8 @@ Common warnings:
 
 ## Current Product Limits
 
-- swap execution is not implemented
+- swap execution is available through prepared plans on supported venues
+- Curve LP execution is available through prepared plans on `ethereum-mainnet`
 - supply execution is `aave`-only
 - preview venue metadata is still curated and narrow in scope
 
@@ -30,5 +31,6 @@ Common warnings:
 - treat quote output as expiring market data, not a standing execution guarantee
 - review stored DeFi plan steps before execution
 - do not infer venue safety from brand familiarity alone
-- avoid describing unsupported flows like borrow, LP execution, or vault actions
-  as available when only preview/discovery exists
+- avoid describing unsupported flows like borrow or generic vault actions as
+  available when the current execution surface is limited to venue-specific
+  swap, Curve LP, and Aave supply flows

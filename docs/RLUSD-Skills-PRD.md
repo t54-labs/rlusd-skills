@@ -21,7 +21,11 @@ The first release should cover:
 - a registry-driven CLI with JSON output,
 - explicit safety controls for side-effecting actions.
 
-The initial product will **not** implement MCP integration. It will also **not** attempt to automate Ripple's institutional onboarding or fiat wire operations end-to-end; those flows will be represented as guidance, status surfaces, and operator checklists because the public RLUSD flow is currently UI- and bank-wire-based.[1][2][3]
+The initial product will **not** implement MCP integration. It will also **not**
+attempt to automate manual fiat onboarding, purchase, or redemption flows
+end-to-end; those flows will be represented as guidance, status surfaces, and
+operator checklists because the public RLUSD flow is provider- and
+rail-dependent.[1][2][3]
 
 ## 2. Background and Context
 
@@ -72,7 +76,7 @@ Create the **best agent-facing RLUSD developer toolkit** for external
 ### 5.1 Primary Goals
 
 1. Ship a repository that feels structurally familiar to Circle Skills, but tailored to RLUSD.[4]
-2. Let an AI agent reliably route among Ethereum, XRPL, DeFi, and institutional/reference flows.
+2. Let an AI agent reliably route among Ethereum, XRPL, DeFi, and fiat/reference flows.
 3. Expose a CLI whose outputs are unambiguous and machine-readable.
 4. Make all side-effecting operations follow a strict `prepare -> review -> execute -> receipt` lifecycle.
 5. Keep protocol facts that change over time out of skill prose and inside a versioned runtime registry.
@@ -133,7 +137,7 @@ A developer who wants Claude Code or a similar AI agent to inspect balances, pla
 
 1. `use-rlusd`
    - top-level router skill
-   - decides Ethereum vs XRPL vs DeFi vs institutional/reference flow
+   - decides Ethereum vs XRPL vs DeFi vs fiat/reference flow
 
 2. `use-rlusd-ethereum`
    - ERC-20, proxy, decimals, allowance, permit, transfer planning
@@ -305,13 +309,18 @@ The skill should rely on the general fact that RLUSD is an ERC-20 token designed
 
 ### 11.7 Buy / Redeem Requirements
 
-The product must document and support instruction generation around Ripple's current institutional flow:
+The product must document and support instruction generation around current
+manual buy/redeem guidance:
 
-- onboarding requires contact details, tax documents, crypto wallets, and bank accounts;[1]
-- up to three bank accounts can be registered; only onboarded accounts are valid for funding and redemption;[2]
-- buying RLUSD is wire-based and requires the wallet ID / memo reference;[3]
+- onboarding can require contact details, tax documents, crypto wallets, and
+  provider-specific payout or funding details;[1]
+- provider availability, supported rails, and funding constraints can vary by
+  partner or region;[2][3]
+- buying RLUSD may require provider-specific references such as wallet IDs or
+  memo-style details;[3]
 - XRPL purchases require a trust line first;[3]
-- payment settlement depends on banking rails, not just blockchain finality.[3]
+- payment settlement depends on the selected provider or rail, not just
+  blockchain finality.[3]
 
 ### 11.8 Safety and Auditability
 
