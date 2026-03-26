@@ -18,16 +18,17 @@ test('DeFi skill retries common Uniswap fee tiers before declaring a quote unava
   assert.match(skill, /before concluding[\s\S]*(quote|pair)[\s\S]*unavailable/i);
 });
 
-test('routing docs explain that swap quotes are Uniswap-only and Curve is discovery-only', () => {
+test('routing docs explain explicit chain and venue usage for top-level defi flows', () => {
   const routing = read('skills/use-rlusd-evm-defi/references/routing.md');
   const venues = read('skills/use-rlusd-evm-defi/references/venues.md');
 
-  assert.match(routing, /current quote behavior/i);
-  assert.match(routing, /uniswap/i);
-  assert.match(routing, /curve/i);
-  assert.match(routing, /--venue/i);
+  assert.match(routing, /defi quote swap[\s\S]*--chain[\s\S]*--venue/i);
+  assert.match(routing, /defi swap prepare/i);
+  assert.match(routing, /defi swap execute/i);
+  assert.doesNotMatch(routing, /uniswap-only/i);
   assert.match(venues, /curve/i);
-  assert.match(venues, /discovery-only/i);
+  assert.doesNotMatch(venues, /discovery-only/i);
+  assert.match(venues, /live quote|swap prepare|lp/i);
 });
 
 test('troubleshooting tells users to retry common fee tiers for QUOTE_UNAVAILABLE', () => {
@@ -36,4 +37,54 @@ test('troubleshooting tells users to retry common fee tiers for QUOTE_UNAVAILABL
   assert.match(troubleshooting, /QUOTE_UNAVAILABLE/);
   assert.match(troubleshooting, /fee-tier/i);
   assert.match(troubleshooting, /100[\s\S]*500[\s\S]*3000[\s\S]*10000/i);
+  assert.match(troubleshooting, /--venue/i);
+});
+
+test('docs describe prepared swap and curve lp flows on ethereum mainnet', () => {
+  const examples = read('docs/examples/defi.md');
+  const skill = read('skills/rlusd-defi-action/SKILL.md');
+
+  assert.match(examples, /defi swap prepare/i);
+  assert.match(examples, /defi swap execute/i);
+  assert.match(examples, /defi lp preview/i);
+  assert.match(examples, /defi lp prepare/i);
+  assert.match(examples, /defi lp execute/i);
+  assert.match(examples, /ethereum-mainnet/i);
+
+  assert.match(skill, /defi swap prepare/i);
+  assert.match(skill, /defi swap execute/i);
+  assert.match(skill, /defi lp preview|defi lp prepare|defi lp execute/i);
+});
+
+test('docs keep defi lp preview distinct from prepared-plan outputs', () => {
+  const cliReadme = read('../rlusd-cli/README.md');
+  const framework = read('../rlusd-cli/docs/FRAMEWORK.md');
+  const examples = read('docs/examples/defi.md');
+  const skill = read('skills/use-rlusd-evm-defi/SKILL.md');
+
+  assert.doesNotMatch(cliReadme, /defi lp preview\|prepare\|execute[\s\S]*prepared-plan contract/i);
+  assert.doesNotMatch(framework, /defi lp preview\|prepare\|execute[\s\S]*intent\.steps\[\]/i);
+  assert.match(examples, /defi lp preview/i);
+  assert.match(examples, /preview-only|does not return `plan_id`, `plan_path`, or `intent\.steps`/i);
+  assert.match(skill, /defi lp preview/i);
+  assert.match(skill, /preview-only|does not return `plan_id`, `plan_path`, or `intent\.steps`/i);
+});
+
+test('docs recommend explicit chain and venue without overstating runtime requirements', () => {
+  const cliReadme = read('../rlusd-cli/README.md');
+  const framework = read('../rlusd-cli/docs/FRAMEWORK.md');
+  const skillsReadme = read('README.md');
+  const commandRef = read('docs/command-reference.md');
+  const troubleshooting = read('docs/troubleshooting.md');
+  const skill = read('skills/use-rlusd-evm-defi/SKILL.md');
+  const actionSkill = read('skills/rlusd-defi-action/SKILL.md');
+
+  assert.doesNotMatch(cliReadme, /always require an explicit `--chain`/i);
+  assert.doesNotMatch(cliReadme, /all swap or LP flows require an explicit `--venue`/i);
+  assert.doesNotMatch(framework, /require an explicit `--chain`; swap and LP flows also require an explicit `--venue`/i);
+  assert.doesNotMatch(skillsReadme, /requires explicit `--chain` and explicit `--venue`/i);
+  assert.doesNotMatch(commandRef, /all top-level DeFi quote calls require explicit `--chain` and explicit `--venue`/i);
+  assert.doesNotMatch(troubleshooting, /`defi quote swap` requires explicit `--chain` and explicit `--venue`/i);
+  assert.doesNotMatch(skill, /Top-level `defi` flows require explicit `--chain`/i);
+  assert.doesNotMatch(actionSkill, /Top-level `defi` flows require explicit `--chain`/i);
 });

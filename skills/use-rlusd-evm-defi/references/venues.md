@@ -17,14 +17,18 @@ Current bundled venue metadata:
 - `curve`
   - capabilities: `swap`, `lp`
   - approval mode: `approve`
-  - discovery-only in the current top-level DeFi surface
+  - live quote source for `defi quote swap --venue curve`
+  - current prepared swap and LP venue on `ethereum-mainnet` for RLUSD/USDC
 - `uniswap`
   - capabilities: `swap`, `lp`
   - approval mode: `approve`
-  - current live quote source for `defi quote swap`
+  - live quote source for `defi quote swap --venue uniswap`
+  - use when fee-tier selection is required
 
 ## Important Limits
 
 - venue metadata is curated registry data, not a live protocol crawl
-- live quote support does not imply swap execution support
-- Aave is the only current DeFi action venue with prepare/execute support
+- live quote and execution support are venue-specific; inspect the venue and
+  command contract rather than assuming parity
+- Aave remains the bundled lend/supply execution venue
+- Curve is the bundled swap/LP execution venue for `ethereum-mainnet`

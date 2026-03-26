@@ -12,22 +12,56 @@ requested capability, not necessarily all of them.
 ## Swap Quote Selection
 
 ```bash
-rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --json
-rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --fee-tier 100 --json
+rlusd defi quote swap --chain ethereum-mainnet --venue uniswap --from RLUSD --to USDC --amount 1000 --json
+rlusd defi quote swap --chain ethereum-mainnet --venue uniswap --from RLUSD --to USDC --amount 1000 --fee-tier 100 --json
+rlusd defi quote swap --chain ethereum-mainnet --venue curve --from RLUSD --to USDC --amount 1000 --json
 ```
 
 Current quote behavior:
 
-- the CLI inspects a live Uniswap quote path for the requested RLUSD pair
+- `defi quote swap` requires explicit `--venue`
+- for predictable automation, pass explicit `--chain`; otherwise the CLI can
+  resolve it from the global flag or `default_chain` config
+- `--venue uniswap` inspects a live Uniswap quote path for the requested RLUSD pair
 - the default `--fee-tier` is `3000`
 - if the default quote fails, retry common Uniswap fee tiers `100`, `500`,
   `3000`, and `10000` before concluding the pair is unavailable
-- `curve` may appear in `defi venues`, but the current quote path is still
-  Uniswap-only and does not accept `--venue`
+- `--venue curve` uses the bundled Curve RLUSD/USDC pool on `ethereum-mainnet`
+- Curve quoting in this batch is limited to the `RLUSD <-> USDC` pair
 - the result includes freshness metadata: `quoted_at`, `ttl_seconds`, and
   `expires_at`
 - quote output should be treated as expiring market data rather than static
   preview data
+
+## Swap Plan Routing
+
+```bash
+rlusd defi swap prepare --chain ethereum-mainnet --venue curve --from-wallet ops --from RLUSD --to USDC --amount 1000 --slippage 50 --json
+rlusd defi swap execute --plan ~/.config/rlusd-cli/plans/<plan_id>.json --confirm-plan-id <plan_id> --json
+```
+
+Current swap routing:
+
+- `defi swap prepare` stores deterministic venue-specific `intent.steps`
+- `defi swap execute` replays the stored steps after confirmation checks
+- Curve swap execution in this batch is limited to `ethereum-mainnet` RLUSD/USDC
+
+## LP Routing
+
+```bash
+rlusd defi lp preview --chain ethereum-mainnet --venue curve --operation add --rlusd-amount 1000 --usdc-amount 1000 --json
+rlusd defi lp prepare --chain ethereum-mainnet --venue curve --operation remove --from-wallet ops --lp-amount 50 --receive-token RLUSD --json
+rlusd defi lp execute --plan ~/.config/rlusd-cli/plans/<plan_id>.json --confirm-plan-id <plan_id> --json
+```
+
+Current LP routing:
+
+- LP flows currently require `--venue curve`
+- `--operation add` uses both token amounts
+- `--operation remove` uses `--lp-amount` plus `--receive-token`
+- `defi lp preview` returns preview data only; `plan_id`, `plan_path`, and
+  `intent.steps` appear on `defi lp prepare`
+- the bundled LP path is limited to `ethereum-mainnet`
 
 ## Supply Routing
 

@@ -228,7 +228,7 @@ Notes:
 Read a live RLUSD swap quote with expiry metadata.
 
 ```bash
-rlusd defi quote swap --chain <chain> --from RLUSD --to USDC --amount <amount> [--fee-tier <fee>] --json
+rlusd defi quote swap --chain <chain> --venue <venue> --from RLUSD --to USDC --amount <amount> [--fee-tier <fee>] --json
 ```
 
 Returns:
@@ -236,7 +236,8 @@ Returns:
 - selected `route.venue`
 - `pricing_source = live_quote`
 - `amount_out`
-- `fee_bps`
+- `fee_bps` for Uniswap quotes
+- `pool_name` and `pool_address` for Curve quotes
 - `quoted_at`
 - `ttl_seconds`
 - `expires_at`
@@ -244,10 +245,74 @@ Returns:
 Warnings:
 
 - `quote_expires`
+- `defi quote swap` requires explicit `--venue`; examples should also pass
+  explicit `--chain` for predictability, although the CLI can resolve `--chain`
+  from the global flag or `default_chain` config
 - the default `--fee-tier` is `3000`; retry `100`, `500`, `3000`, and `10000`
-  before concluding the pair is unsupported
-- `curve` may appear in `defi venues`, but `defi quote swap` currently uses the
-  Uniswap quote path only and does not accept `--venue`
+  before concluding a Uniswap pair is unsupported
+- `--fee-tier` is Uniswap-specific; Curve uses the fixed Ethereum mainnet
+  RLUSD/USDC pool
+- Curve swap quotes are limited to `ethereum-mainnet` and the `RLUSD <-> USDC`
+  pair in this batch
+
+### `defi swap prepare`
+
+Create a deterministic DeFi swap plan.
+
+```bash
+rlusd defi swap prepare --chain <chain> --venue <venue> --from-wallet <wallet_name> --from RLUSD --to USDC --amount <amount> [--slippage <bps>] [--fee-tier <fee>] --json
+```
+
+Notes:
+
+- top-level swap writes follow `prepare -> review -> execute`
+- stored `intent.steps` are venue-specific deterministic calldata steps
+- Curve prepare is limited to `ethereum-mainnet` RLUSD/USDC in this batch
+
+### `defi swap execute`
+
+Execute a prepared DeFi swap plan.
+
+```bash
+rlusd defi swap execute --plan <path> [--confirm-plan-id <plan_id>] --json
+```
+
+Returns submitted step hashes for each stored step.
+
+### `defi lp preview`
+
+Preview a Curve LP add/remove flow.
+
+```bash
+rlusd defi lp preview --chain <chain> --venue curve --operation <add|remove> [--rlusd-amount <amount>] [--usdc-amount <amount>] [--lp-amount <amount>] [--receive-token RLUSD|USDC] --json
+```
+
+Returns preview data only. It does not return `plan_id`, `plan_path`, or
+`intent.steps`.
+
+### `defi lp prepare`
+
+Create a deterministic Curve LP plan.
+
+```bash
+rlusd defi lp prepare --chain <chain> --venue curve --operation <add|remove> --from-wallet <wallet_name> [--rlusd-amount <amount>] [--usdc-amount <amount>] [--lp-amount <amount>] [--receive-token RLUSD|USDC] --json
+```
+
+Current behavior:
+
+- `--operation add` requires both `--rlusd-amount` and `--usdc-amount`
+- `--operation remove` requires `--lp-amount` and `--receive-token RLUSD|USDC`
+- the first-pass LP flow is Curve-only on `ethereum-mainnet`
+
+### `defi lp execute`
+
+Execute a prepared Curve LP plan.
+
+```bash
+rlusd defi lp execute --plan <path> [--confirm-plan-id <plan_id>] --json
+```
+
+Returns submitted step hashes for each stored step.
 
 ### `defi supply preview`
 

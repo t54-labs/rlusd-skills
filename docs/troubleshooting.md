@@ -127,10 +127,13 @@ Cause:
 What to do:
 
 - list swap venues with `rlusd defi venues --chain ethereum-mainnet --capability swap --json`
-- retry `defi quote swap` with `--fee-tier 100`, `500`, `3000`, and `10000`
+- retry `defi quote swap --venue uniswap` with `--fee-tier 100`, `500`, `3000`, and `10000`
 - do not conclude the pair is unsupported until those common Uniswap tiers fail
-- remember that `curve` is discovery-only in the current quote flow and
-  `defi quote swap` does not accept `--venue`
+- `defi quote swap` requires explicit `--venue`; pass explicit `--chain` for
+  predictability, or let the CLI resolve it from the global flag or
+  `default_chain` config
+- for the bundled Curve route, retry with `--venue curve` on `ethereum-mainnet`
+  for the fixed `RLUSD <-> USDC` pool
 - if all common tiers fail, fall back to currently modeled pairs only
 
 ## Venue or Capability Unsupported

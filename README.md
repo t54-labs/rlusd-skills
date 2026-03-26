@@ -146,10 +146,14 @@ rlusd defi supply prepare \
   --json
 ```
 
-`defi quote swap` currently reads from the Uniswap quote path only. Start with
-the default quote, then retry common fee tiers `100`, `500`, `3000`, and
-`10000` if the default call reverts. `curve` may still appear in venue
-discovery, but it is discovery-only in the current top-level quote flow.
+The examples in this repo pass explicit `--chain` and `--venue` for
+predictability. At runtime, top-level DeFi commands can also inherit `--chain`
+from the global flag or `default_chain` config, while execute commands load the
+venue from the stored plan. Use `--venue uniswap` when fee-tier selection
+matters, and use `--venue curve` for the fixed Ethereum mainnet RLUSD/USDC
+pool. The top-level `defi` surface also includes `defi swap prepare|execute`
+and `defi lp preview|prepare|execute` for prepared swap and Curve LP workflows
+on `ethereum-mainnet`.
 
 ## Documentation
 
