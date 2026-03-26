@@ -26,28 +26,42 @@ Options:
 - `--chain <chain>`: registry chain key
 - `--symbol <symbol>`: asset symbol, defaults to `RLUSD`
 
-## `evm`
+## `balance`
 
-### `evm balance`
+### `balance`
 
-Read the RLUSD token balance for an EVM address.
+Read the RLUSD token balance for a configured wallet or explicit address.
 
 ```bash
-rlusd evm balance --chain <chain> --address <address> --json
+rlusd balance --chain <chain> --address <address> --json
 ```
 
 Options:
 
-- `--chain <chain>`: currently `ethereum-mainnet`
-- `--address <address>`: EVM account to inspect
+- `--chain <chain>`: currently `ethereum` for EVM balance reads on the current CLI surface
+- `--address <address>`: account to inspect; omit to use the configured default wallet
+- `--all`: optional aggregated balance view across configured chains
 
-### `evm allowance`
+## `eth`
 
-Read RLUSD allowance for an owner/spender pair.
+### `eth allowance`
+
+Read RLUSD allowance for a configured wallet owner and spender.
 
 ```bash
-rlusd evm allowance --chain <chain> --owner <address> --spender <address> --json
+rlusd eth allowance --chain <chain> --owner-wallet <wallet_name> --spender <address> --json
 ```
+
+Options:
+
+- `--chain <chain>`: currently `ethereum`
+- `--owner-wallet <wallet_name>`: local wallet alias to use as the RLUSD owner
+- `--spender <address>`: EVM spender to inspect
+
+## `evm`
+
+Prepared EVM agent flows for transfer, approval, and transaction monitoring use
+registry-backed labels such as `ethereum-mainnet`.
 
 ### `evm transfer prepare`
 

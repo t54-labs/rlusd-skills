@@ -36,8 +36,8 @@ Implemented:
 - `use-rlusd-ethereum`
 - `use-rlusd-xrpl`
 - external `resolve asset` routing
-- external `evm balance`
-- external `evm allowance`
+- external `balance`
+- external `eth allowance`
 - external `xrpl trustline status`
 - external `xrpl account info`
 
@@ -130,10 +130,16 @@ Important note:
 
 - external `resolve asset`
 
+### `balance`
+
+- external `balance`
+
+### `eth`
+
+- external `eth allowance`
+
 ### `evm`
 
-- external `evm balance`
-- external `evm allowance`
 - external `evm transfer prepare`
 - external `evm transfer execute`
 - external `evm approve prepare`

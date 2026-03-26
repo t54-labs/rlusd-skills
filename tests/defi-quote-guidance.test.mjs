@@ -70,6 +70,37 @@ test('docs keep defi lp preview distinct from prepared-plan outputs', () => {
   assert.match(skill, /preview-only|does not return `plan_id`, `plan_path`, or `intent\.steps`/i);
 });
 
+test('ethereum read guidance matches the current CLI balance and allowance surfaces', () => {
+  const cliReadme = read('../rlusd-cli/README.md');
+  const routing = read('skills/use-rlusd/SKILL.md');
+  const ethSkill = read('skills/use-rlusd-ethereum/SKILL.md');
+  const examples = read('docs/examples/ethereum.md');
+  const commandRef = read('docs/command-reference.md');
+  const troubleshooting = read('docs/troubleshooting.md');
+
+  assert.match(cliReadme, /rlusd balance --chain ethereum/i);
+  assert.match(cliReadme, /rlusd eth allowance --spender/i);
+
+  for (const doc of [routing, examples, commandRef]) {
+    assert.doesNotMatch(doc, /rlusd evm balance/i);
+    assert.doesNotMatch(doc, /rlusd evm allowance/i);
+  }
+
+  assert.match(routing, /rlusd balance --chain ethereum --address 0x\.\.\. --json/i);
+  assert.match(routing, /rlusd eth allowance --chain ethereum --owner-wallet ops --spender 0x\.\.\. --json/i);
+  assert.match(routing, /defi quote swap[\s\S]*--venue/i);
+  assert.match(ethSkill, /run `balance`/i);
+  assert.match(ethSkill, /run `eth allowance`/i);
+  assert.match(examples, /rlusd balance[\s\S]*--chain ethereum[\s\S]*--address/i);
+  assert.match(examples, /rlusd eth allowance[\s\S]*--chain ethereum[\s\S]*--owner-wallet ops[\s\S]*--spender/i);
+  assert.match(commandRef, /### `balance`[\s\S]*rlusd balance --chain <chain> --address <address> --json/i);
+  assert.match(
+    commandRef,
+    /### `eth allowance`[\s\S]*rlusd eth allowance --chain <chain> --owner-wallet <wallet_name> --spender <address> --json/i,
+  );
+  assert.match(troubleshooting, /unknown command 'balance'|evm balance/i);
+});
+
 test('docs recommend explicit chain and venue without overstating runtime requirements', () => {
   const cliReadme = read('../rlusd-cli/README.md');
   const framework = read('../rlusd-cli/docs/FRAMEWORK.md');

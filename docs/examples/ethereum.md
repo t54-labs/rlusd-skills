@@ -22,8 +22,8 @@ Expected highlights:
 ## Read a Balance
 
 ```bash
-rlusd evm balance \
-  --chain ethereum-mainnet \
+rlusd balance \
+  --chain ethereum \
   --address 0x1234567890123456789012345678901234567890 \
   --json
 ```
@@ -31,12 +31,16 @@ rlusd evm balance \
 ## Read an Allowance
 
 ```bash
-rlusd evm allowance \
-  --chain ethereum-mainnet \
-  --owner 0x1234567890123456789012345678901234567890 \
+rlusd eth allowance \
+  --chain ethereum \
+  --owner-wallet ops \
   --spender 0x1111111111111111111111111111111111111111 \
   --json
 ```
+
+Current allowance reads are wallet-backed on the current CLI surface: pass
+`--owner-wallet`, not a raw `--owner` address. Prepared EVM action flows below
+still use registry-backed labels such as `ethereum-mainnet`.
 
 ## Prepare a Transfer
 

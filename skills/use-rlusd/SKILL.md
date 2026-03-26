@@ -51,7 +51,8 @@ task belongs to Ethereum or XRPL.
 1. Resolve RLUSD metadata for the intended chain.
 2. For Ethereum DeFi discovery, live swap quotes, and Aave supply preview/prepare/execute,
    use the `defi` namespace.
-3. For Ethereum reads, use the `evm` namespace.
+3. For Ethereum reads, use top-level `balance` for RLUSD balances and
+   `eth allowance` for wallet-backed allowance reads.
 4. Before any wallet-backed Ethereum or XRPL action, load `rlusd-wallets` if
    the flow depends on a local wallet alias.
 5. For Ethereum planning, use the `prepare` commands first and only call `execute`
@@ -66,13 +67,13 @@ task belongs to Ethereum or XRPL.
 ```bash
 rlusd resolve asset --chain ethereum-mainnet --json
 rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json
-rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --json
-rlusd defi quote swap --chain ethereum-mainnet --from RLUSD --to USDC --amount 1000 --fee-tier 100 --json
+rlusd defi quote swap --chain ethereum-mainnet --venue curve --from RLUSD --to USDC --amount 1000 --json
+rlusd defi quote swap --chain ethereum-mainnet --venue uniswap --from RLUSD --to USDC --amount 1000 --fee-tier 100 --json
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
 rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
-rlusd evm balance --chain ethereum-mainnet --address 0x... --json
-rlusd evm allowance --chain ethereum-mainnet --owner 0x... --spender 0x... --json
+rlusd balance --chain ethereum --address 0x... --json
+rlusd eth allowance --chain ethereum --owner-wallet ops --spender 0x... --json
 rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
 rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
@@ -105,8 +106,9 @@ rlusd fiat redeem instructions --json
   freshness metadata such as `quoted_at`, `ttl_seconds`, and `expires_at`.
 - `defi quote swap` defaults to Uniswap fee tier `3000`; retry `100`, `500`,
   `3000`, and `10000` before concluding the pair is unavailable.
-- `curve` may appear in `defi venues`, but the current quote flow is
-  Uniswap-only and does not support `--venue`.
+- `defi quote swap` currently requires explicit `--venue`; use `curve` for the
+  bundled Ethereum mainnet `RLUSD <-> USDC` pool and `uniswap` when fee-tier
+  selection matters.
 - If a requested chain is missing from the registry, fail clearly and extend the
   registry instead of inventing runtime values.
 

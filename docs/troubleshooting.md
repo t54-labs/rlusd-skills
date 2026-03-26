@@ -9,12 +9,34 @@ Symptom:
 Cause:
 
 - the requested chain key is not present in the bundled registry
+- the current CLI uses different chain labels for top-level reads vs
+  registry-backed prepared flows
 
 What to do:
 
-- use one of the currently bundled keys: `ethereum-mainnet` or `xrpl-mainnet`
+- use `ethereum-mainnet` for registry-backed `resolve`, `defi`, and prepared
+  `evm ... prepare|execute|tx` flows
+- use `ethereum` for top-level `rlusd balance` and `rlusd eth allowance`
+- use `xrpl-mainnet` for the registry-backed XRPL flows documented in this repo
 - if you need additional networks later, add the registry entry first instead of
   guessing chain metadata
+
+## Unknown EVM Balance Command
+
+Symptom:
+
+- `error: unknown command 'balance'` after running `rlusd evm balance`
+
+Cause:
+
+- current CLI releases moved RLUSD balance reads to top-level `rlusd balance`
+- allowance reads now live under `rlusd eth allowance`
+
+What to do:
+
+- use `rlusd balance --chain ethereum --address <0x-address> --json`
+- use `rlusd eth allowance --chain ethereum --owner-wallet <wallet_name> --spender <0x-address> --json`
+- keep prepared transfer, approval, and tx monitoring flows under `rlusd evm ...`
 
 ## Missing Wallet Alias
 

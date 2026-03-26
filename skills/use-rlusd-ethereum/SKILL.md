@@ -26,6 +26,9 @@ current contract metadata or when the workflow depends on ERC-20 behavior.
 # Decision Guide
 
 - Start with registry resolution before any balance or transfer logic.
+- Use top-level `balance` for RLUSD balance reads on Ethereum.
+- Use `eth allowance` for wallet-backed allowance checks; the current CLI does
+  not expose a raw `--owner <address>` pair under `evm`.
 - Treat the proxy address as the canonical integration address.
 - Treat issuer-admin features such as freeze, clawback, and upgrades as risk
   constraints, not end-user actions.
@@ -39,8 +42,8 @@ current contract metadata or when the workflow depends on ERC-20 behavior.
 
 ```bash
 rlusd resolve asset --chain ethereum-mainnet --json
-rlusd evm balance --chain ethereum-mainnet --address 0x... --json
-rlusd evm allowance --chain ethereum-mainnet --owner 0x... --spender 0x... --json
+rlusd balance --chain ethereum --address 0x... --json
+rlusd eth allowance --chain ethereum --owner-wallet ops --spender 0x... --json
 rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
 rlusd evm transfer execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --json
 rlusd evm tx wait --chain ethereum-mainnet --hash 0x... --json
@@ -54,7 +57,8 @@ Use the output to confirm:
 - `symbol` is `RLUSD`
 - `address_type` is `proxy`
 - `decimals` is `18`
-- balance and allowance reads resolve against the same proxy-backed asset metadata
+- balance reads and wallet-backed allowance checks resolve against the same
+  proxy-backed asset metadata
 - transfer and approval plans resolve against the same proxy-backed asset metadata
 - execute commands submit the same encoded intent only after explicit confirmation
 - transaction wait and receipt commands inspect the submitted on-chain hash directly
@@ -64,6 +68,8 @@ Use the output to confirm:
 - Never use the implementation contract when the proxy address is available.
 - Do not hardcode addresses into prompts or scripts when the CLI can resolve
   them.
+- Do not use legacy `rlusd evm balance` or `rlusd evm allowance` examples with
+  the current CLI surface.
 - Do not assume the example wallet alias `ops` already exists locally; check it
   with `rlusd-wallets` before any wallet-backed action.
 - If the user asks for Sepolia and the registry does not have it yet, stop and
@@ -79,8 +85,8 @@ Use the output to confirm:
 
 - "What is the RLUSD contract on Ethereum?" -> run `resolve asset`
 - "Is this the proxy or implementation address?" -> inspect `address_type`
-- "What is the RLUSD balance for this wallet?" -> run `evm balance`
-- "Has this spender been approved for RLUSD?" -> run `evm allowance`
+- "What is the RLUSD balance for this wallet?" -> run `balance`
+- "Has this spender been approved for RLUSD?" -> run `eth allowance`
 - "Prepare an RLUSD transfer from my wallet for review." -> use `rlusd-wallets`, then run `evm transfer prepare`
 - "Prepare an RLUSD transfer for review." -> run `evm transfer prepare`
 - "Prepare an RLUSD approval for review." -> run `evm approve prepare`
