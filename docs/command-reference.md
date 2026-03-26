@@ -245,7 +245,9 @@ Returns:
 Warnings:
 
 - `quote_expires`
-- all top-level DeFi quote calls require explicit `--chain` and explicit `--venue`
+- `defi quote swap` requires explicit `--venue`; examples should also pass
+  explicit `--chain` for predictability, although the CLI can resolve `--chain`
+  from the global flag or `default_chain` config
 - the default `--fee-tier` is `3000`; retry `100`, `500`, `3000`, and `10000`
   before concluding a Uniswap pair is unsupported
 - `--fee-tier` is Uniswap-specific; Curve uses the fixed Ethereum mainnet
@@ -284,6 +286,9 @@ Preview a Curve LP add/remove flow.
 ```bash
 rlusd defi lp preview --chain <chain> --venue curve --operation <add|remove> [--rlusd-amount <amount>] [--usdc-amount <amount>] [--lp-amount <amount>] [--receive-token RLUSD|USDC] --json
 ```
+
+Returns preview data only. It does not return `plan_id`, `plan_path`, or
+`intent.steps`.
 
 ### `defi lp prepare`
 

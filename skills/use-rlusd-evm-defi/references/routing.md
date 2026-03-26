@@ -19,7 +19,9 @@ rlusd defi quote swap --chain ethereum-mainnet --venue curve --from RLUSD --to U
 
 Current quote behavior:
 
-- top-level `defi quote swap` requires explicit `--chain` and explicit `--venue`
+- `defi quote swap` requires explicit `--venue`
+- for predictable automation, pass explicit `--chain`; otherwise the CLI can
+  resolve it from the global flag or `default_chain` config
 - `--venue uniswap` inspects a live Uniswap quote path for the requested RLUSD pair
 - the default `--fee-tier` is `3000`
 - if the default quote fails, retry common Uniswap fee tiers `100`, `500`,
@@ -57,6 +59,8 @@ Current LP routing:
 - LP flows currently require `--venue curve`
 - `--operation add` uses both token amounts
 - `--operation remove` uses `--lp-amount` plus `--receive-token`
+- `defi lp preview` returns preview data only; `plan_id`, `plan_path`, and
+  `intent.steps` appear on `defi lp prepare`
 - the bundled LP path is limited to `ethereum-mainnet`
 
 ## Supply Routing

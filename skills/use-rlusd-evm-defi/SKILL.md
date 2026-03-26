@@ -28,8 +28,12 @@ preview-first route selection for swap, LP, and supply flows on EVM chains.
 
 - Start with `defi venues` to discover chain-compatible RLUSD venues by capability.
 - Use `defi quote swap` for a live quote only after confirming the venue matrix.
-- Pass explicit `--chain` on every top-level `defi` command, and pass explicit
-  `--venue` on every swap or LP flow.
+- For predictable automation, prefer passing explicit `--chain` on top-level
+  `defi` commands. If omitted, the CLI can also resolve it from the global flag
+  or `default_chain` config.
+- Pass explicit `--venue` on swap quote, swap prepare, LP preview, and LP
+  prepare flows. Swap and LP execute commands load the venue from the stored
+  plan instead.
 - If the default quote returns `QUOTE_UNAVAILABLE`, retry common Uniswap fee tiers
   `100`, `500`, `3000`, and `10000` before concluding the pair is unavailable.
 - Use `--venue uniswap` when fee-tier selection matters.
@@ -73,6 +77,8 @@ Use the output to confirm:
 - the quote result surfaces `route.venue`, plus `fee_bps` for Uniswap or
   `pool_name`/`pool_address` for Curve,
 - the quoted `amount_out` is treated as expiring live quote data,
+- `defi lp preview` stays preview-only and does not return `plan_id`,
+  `plan_path`, or `intent.steps`,
 - swap and LP prepared plans contain deterministic `intent.steps`,
 - Aave supply preview outputs are marked as preview-only and surface whether
   RLUSD is treated as collateral,
@@ -88,8 +94,11 @@ Use the output to confirm:
   prove the pair is unsupported.
 - Retry `--fee-tier 100`, `500`, `3000`, and `10000` before concluding a quote is
   unavailable.
-- Top-level `defi` flows require explicit `--chain`; swap and LP flows require
-  explicit `--venue`.
+- Examples in this skill pass explicit `--chain` and `--venue` for
+  predictability, but `--chain` can also come from the global flag or
+  `default_chain` config.
+- Swap quote, LP preview, and prepare flows take explicit `--venue`; execute
+  flows read the venue from the stored plan.
 - Curve support in this batch is intentionally narrow: `ethereum-mainnet` only,
   RLUSD/USDC only for swaps, and LP add/remove only through `defi lp`.
 - Capability filters match venues that support any requested capability.

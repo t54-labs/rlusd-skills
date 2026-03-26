@@ -28,8 +28,12 @@ not just discover venues or preview routes.
 - Start with `defi venues` to confirm the venue supports the required
   capability.
 - Use `defi quote swap` for live quote reads before any swap decision.
-- Pass explicit `--chain` on every top-level `defi` command, and pass explicit
-  `--venue` on every swap or LP flow.
+- For predictable automation, prefer passing explicit `--chain` on top-level
+  `defi` commands. If omitted, the CLI can also resolve it from the global flag
+  or `default_chain` config.
+- Pass explicit `--venue` on swap quote, swap prepare, LP preview, and LP
+  prepare flows. Swap and LP execute commands load the venue from the stored
+  plan instead.
 - If a swap quote returns `QUOTE_UNAVAILABLE`, retry common Uniswap fee tiers
   `100`, `500`, `3000`, and `10000` before concluding the pair is unavailable.
 - Use `--venue uniswap` when fee-tier selection matters.
@@ -66,10 +70,15 @@ rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <pla
   prove the pair is unsupported.
 - Retry `--fee-tier 100`, `500`, `3000`, and `10000` before reporting
   `QUOTE_UNAVAILABLE` for a pair.
-- Top-level `defi` flows require explicit `--chain`; swap and LP flows require
-  explicit `--venue`.
+- Examples in this skill pass explicit `--chain` and `--venue` for
+  predictability, but `--chain` can also come from the global flag or
+  `default_chain` config.
+- Swap quote, LP preview, and prepare flows take explicit `--venue`; execute
+  flows read the venue from the stored plan.
 - Curve support is intentionally narrow: `ethereum-mainnet` only, RLUSD/USDC
   only for swaps, and add/remove LP through `defi lp`.
+- `defi lp preview` is preview-only and does not return `plan_id`, `plan_path`,
+  or `intent.steps`.
 - The current supply execute path is still Aave-only.
 - Aave supply execution submits the stored `approve` step before the stored
   `supply` step.

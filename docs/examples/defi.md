@@ -118,6 +118,9 @@ Review:
 - `lp_token_amount`
 - `warnings`
 
+This response is preview-only. It does not return `plan_id`, `plan_path`, or
+`intent.steps`; those appear on `defi lp prepare`.
+
 ## Prepare a Curve LP Remove Plan
 
 ```bash
