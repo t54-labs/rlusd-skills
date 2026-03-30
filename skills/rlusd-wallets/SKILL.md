@@ -87,20 +87,8 @@ rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --j
 
 rlusd wallet keychain enable <name> --password "$RLUSD_WALLET_PASSWORD"
 rlusd wallet keychain disable <name>
-rlusd wallet keychain status [name]
-rlusd wallet keychain status --chain xrpl
+rlusd wallet keychain status [name] [--chain <chain>]
 ```
-
-Notes on keychain commands:
-- Keychain subcommands produce plain text output only; `--json` is not supported.
-- `keychain enable` requires `--password` (or `RLUSD_WALLET_PASSWORD` env var) to
-  validate and store the password in the system Keychain.
-- `keychain status` name is optional; when omitted it checks the default wallet
-  for the chain (use `--chain` to specify which chain).
-
-Notes on Keychain opt-out for generate/import:
-- Pass `--no-store-in-keychain` on `wallet generate` or `wallet import` to
-  prevent automatic macOS Keychain storage for that wallet.
 
 # Wallet Preflight
 
@@ -120,6 +108,8 @@ Notes on Keychain opt-out for generate/import:
    `rlusd wallet use <name> --chain <chain> --json`.
 8. Keychain storage is enabled by default for new wallets and imports on macOS.
    To manually manage Keychain entries, use `rlusd wallet keychain enable|disable|status`.
+   Pass `--no-store-in-keychain` to `wallet generate` or `wallet import` to opt
+   out of automatic Keychain storage at creation time.
 9. To export an XRPL wallet seed (e.g., for third-party import), use
    `rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --json`.
 
@@ -134,8 +124,7 @@ Notes on Keychain opt-out for generate/import:
 - Export XRPL seed: `rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --json`
 - Enable Keychain for a wallet: `rlusd wallet keychain enable <name> --password "$RLUSD_WALLET_PASSWORD"`
 - Disable Keychain for a wallet: `rlusd wallet keychain disable <name>`
-- Check Keychain status: `rlusd wallet keychain status [name]` (uses default wallet when name omitted; pass `--chain` to select chain)
-- Opt out of Keychain on create: pass `--no-store-in-keychain` on `wallet generate` or `wallet import`
+- Check Keychain status: `rlusd wallet keychain status [name] [--chain <chain>]`
 - Password source: prefer `RLUSD_WALLET_PASSWORD` for encrypted wallet actions.
   Keychain storage is enabled by default for new wallets and imports on macOS.
 
@@ -160,10 +149,10 @@ For "Send 25 RLUSD on Ethereum from my wallet":
   or chain.
 - Forgetting `RLUSD_WALLET_PASSWORD` when the CLI needs to decrypt an encrypted
   wallet.
-- Not checking `rlusd wallet keychain status [name]` when debugging
-  password issues. If Keychain is enabled, the CLI reads the password from the
-  system Keychain; a stale or missing Keychain entry causes decryption failures
-  even when the correct password is set via env var.
+- Not checking `rlusd wallet keychain status [name]` when debugging password
+  issues. Use `keychain status` to see whether the CLI will read from Keychain,
+  env var, or prompt. A stale or missing Keychain entry can cause decryption
+  failures even when the correct password is set via env var.
 
 # Common Rationalizations
 
