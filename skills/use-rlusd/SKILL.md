@@ -39,6 +39,8 @@ task belongs to Ethereum or XRPL.
 - Route to `rlusd-defi-action` for explicit reviewed RLUSD DeFi action flows.
 - Route to `rlusd-wallets` when the user says "my wallet" or a planned command
   needs `--from-wallet`, `--owner-wallet`, or `--wallet`.
+- Route to `rlusd-x402` for x402, paid API access, or HTTP payment negotiation
+  requests on XRPL.
 - If the request is broad or ambiguous, start with
   `rlusd resolve asset --chain ethereum-mainnet --json` to anchor the chain and
   asset metadata before routing further.
@@ -99,6 +101,7 @@ rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
 rlusd fiat onboarding checklist --json
 rlusd fiat buy instructions --json
 rlusd fiat redeem instructions --json
+rlusd x402 fetch <url> --wallet <name> --max-value <amount> --json
 ```
 
 # Common Warnings
@@ -134,6 +137,8 @@ rlusd fiat redeem instructions --json
 - "Can this XRPL wallet receive RLUSD?" -> use `use-rlusd-xrpl`
 - "Check whether I have an RLUSD wallet configured." -> use `rlusd-wallets`
 - "How do I buy or redeem RLUSD directly with Ripple?" -> use `buy-redeem-rlusd`
+- "Access a paid API with RLUSD." -> use `rlusd-x402`
+- "Fetch an x402-protected resource." -> use `rlusd-x402`
 
 # References
 
