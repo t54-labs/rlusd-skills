@@ -85,9 +85,9 @@ rlusd wallet use treasury-xrpl --chain xrpl --json
 
 rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --json
 
-rlusd wallet keychain enable <name> --json
-rlusd wallet keychain disable <name> --json
-rlusd wallet keychain status <name> --json
+rlusd wallet keychain enable <name> --password "$RLUSD_WALLET_PASSWORD"
+rlusd wallet keychain disable <name>
+rlusd wallet keychain status [name] [--chain <chain>]
 ```
 
 # Wallet Preflight
@@ -108,6 +108,8 @@ rlusd wallet keychain status <name> --json
    `rlusd wallet use <name> --chain <chain> --json`.
 8. Keychain storage is enabled by default for new wallets and imports on macOS.
    To manually manage Keychain entries, use `rlusd wallet keychain enable|disable|status`.
+   Pass `--no-store-in-keychain` to `wallet generate` or `wallet import` to opt
+   out of automatic Keychain storage at creation time.
 9. To export an XRPL wallet seed (e.g., for third-party import), use
    `rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --json`.
 
@@ -120,9 +122,9 @@ rlusd wallet keychain status <name> --json
 - Import an existing wallet: `rlusd wallet import --chain <chain> --name <name> ... --json`
 - Set the default wallet: `rlusd wallet use <name> --chain <chain> --json`
 - Export XRPL seed: `rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --json`
-- Enable Keychain for a wallet: `rlusd wallet keychain enable <name> --json`
-- Disable Keychain for a wallet: `rlusd wallet keychain disable <name> --json`
-- Check Keychain status: `rlusd wallet keychain status <name> --json`
+- Enable Keychain for a wallet: `rlusd wallet keychain enable <name> --password "$RLUSD_WALLET_PASSWORD"`
+- Disable Keychain for a wallet: `rlusd wallet keychain disable <name>`
+- Check Keychain status: `rlusd wallet keychain status [name] [--chain <chain>]`
 - Password source: prefer `RLUSD_WALLET_PASSWORD` for encrypted wallet actions.
   Keychain storage is enabled by default for new wallets and imports on macOS.
 
@@ -147,10 +149,10 @@ For "Send 25 RLUSD on Ethereum from my wallet":
   or chain.
 - Forgetting `RLUSD_WALLET_PASSWORD` when the CLI needs to decrypt an encrypted
   wallet.
-- Not checking `rlusd wallet keychain status <name> --json` when debugging
-  password issues. If Keychain is enabled, the CLI reads the password from the
-  system Keychain; a stale or missing Keychain entry causes decryption failures
-  even when the correct password is set via env var.
+- Not checking `rlusd wallet keychain status [name]` when debugging password
+  issues. Use `keychain status` to see whether the CLI will read from Keychain,
+  env var, or prompt. A stale or missing Keychain entry can cause decryption
+  failures even when the correct password is set via env var.
 
 # Common Rationalizations
 
