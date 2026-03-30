@@ -32,6 +32,13 @@ core parts of the workflow.
   signer alias used by `--wallet` or `--from-wallet`.
 - For explicit trust-line creation/update flows, use `rlusd-trustline`.
 - For explicit XRPL payment flows, use `rlusd-transfer`.
+- XRPL DEX for native XRP/RLUSD limit orders (`buy`, `sell`, `cancel`,
+  `orderbook`).
+- XRPL AMM for XRP/RLUSD pool operations (`info`, `deposit`, `withdraw`,
+  `vote`, `swap`).
+- Pathfind for cross-currency RLUSD payment routing (read-only, no signing).
+- Note: DEX, AMM, and pathfind are direct execution commands with no
+  `prepare`/`execute` pattern.
 
 # Current Command Sequence
 
@@ -45,6 +52,22 @@ rlusd xrpl payment prepare --chain xrpl-mainnet --from-wallet treasury-xrpl --to
 rlusd xrpl payment execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --wallet treasury-xrpl --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd xrpl tx wait --chain xrpl-mainnet --hash ABCD... --json
 rlusd xrpl payment receipt --chain xrpl-mainnet --hash ABCD... --json
+
+# XRPL DEX — native XRP/RLUSD limit orders (direct execution)
+rlusd xrpl dex orderbook --json
+rlusd xrpl dex buy --amount 100 --price 0.5 --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd xrpl dex sell --amount 100 --price 2.0 --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd xrpl dex cancel --sequence 12345 --password "$RLUSD_WALLET_PASSWORD" --json
+
+# XRPL AMM — XRP/RLUSD pool (direct execution)
+rlusd xrpl amm info --json
+rlusd xrpl amm deposit --xrp 100 --rlusd 200 --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd xrpl amm withdraw --lp-tokens 50 --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd xrpl amm vote --fee 500 --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd xrpl amm swap --sell-xrp 10 --password "$RLUSD_WALLET_PASSWORD" --json
+
+# XRPL path finding (read-only)
+rlusd xrpl pathfind --to r... --amount 100 --json
 ```
 
 Use the output to confirm:
@@ -79,6 +102,12 @@ Use the output to confirm:
   logic.
 - Use `xrpl tx wait` and `xrpl payment receipt` after submission instead of
   assuming ledger validation or delivery details.
+- DEX, AMM, and pathfind commands execute directly — there is no
+  `prepare`/`execute` review gate.
+- AMM deposit requires both `--xrp` and `--rlusd`.
+- DEX cancel needs the offer sequence number from the original order.
+- AMM vote fee range is 0-1000 (in units of 1/100,000; 1000 = 1%).
+- Pathfind is read-only (no password needed).
 
 # Examples
 
@@ -92,6 +121,9 @@ Use the output to confirm:
 - "Submit the reviewed RLUSD payment." -> run `payment execute`
 - "Wait for XRPL transaction validation." -> run `tx wait`
 - "Inspect the submitted RLUSD payment receipt." -> run `payment receipt`
+- "View the XRP/RLUSD order book." -> run `xrpl dex orderbook`
+- "Add liquidity to the XRP/RLUSD AMM." -> run `xrpl amm info`, then `xrpl amm deposit`
+- "Find a cross-currency path for RLUSD." -> run `xrpl pathfind`
 
 # References
 
