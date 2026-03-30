@@ -425,6 +425,324 @@ Print provider and settlement guidance for redeeming RLUSD.
 rlusd fiat redeem instructions --json
 ```
 
+## `x402`
+
+### `x402 fetch`
+
+Fetch an x402-protected resource with automatic XRPL payment negotiation.
+
+```bash
+rlusd x402 fetch <url> --max-value <amount> [--wallet <name>] [--method GET|POST] [--header <header...>] [--json-body <json>] [--require-asset <asset>] [--require-issuer <issuer>] [--password "$RLUSD_WALLET_PASSWORD"] --json
+```
+
+Options:
+
+- `<url>`: resource URL (positional argument)
+- `--max-value <amount>`: maximum amount willing to pay per request (required)
+- `--wallet <name>`: stored XRPL wallet to use for signing
+- `--method <method>`: HTTP method, `GET` or `POST` (default `GET`)
+- `--header <header...>`: additional request header(s) as `Name: value`
+- `--json-body <json>`: JSON request body for POST requests
+- `--require-asset <asset>`: only accept payment options for this XRPL asset
+- `--require-issuer <issuer>`: only accept payment options for this XRPL issuer
+- `--password <password>`: wallet password (or set `RLUSD_WALLET_PASSWORD`)
+
+## `wallet keychain`
+
+### `wallet keychain enable`
+
+Store an existing wallet password in the macOS Keychain.
+
+```bash
+rlusd wallet keychain enable <name> [--password "$RLUSD_WALLET_PASSWORD"]
+```
+
+Notes:
+
+- validates the password can decrypt the named wallet before storing
+- macOS only
+
+### `wallet keychain disable`
+
+Remove a wallet password from the macOS Keychain.
+
+```bash
+rlusd wallet keychain disable <name>
+```
+
+### `wallet keychain status`
+
+Check whether a wallet password is stored in the macOS Keychain.
+
+```bash
+rlusd wallet keychain status [name] [--chain <chain>]
+```
+
+Options:
+
+- `[name]`: wallet name (optional; defaults to the chain's default wallet)
+- `--chain <chain>`: chain to use when name is omitted
+
+## `wallet export-seed`
+
+### `wallet export-seed`
+
+Export the XRPL wallet seed for importing into third-party wallets.
+
+```bash
+rlusd wallet export-seed [--wallet <name>] --password "$RLUSD_WALLET_PASSWORD" --json
+```
+
+Options:
+
+- `--wallet <name>`: wallet name to export (defaults to current XRPL wallet)
+- `--password <password>`: wallet password (or set `RLUSD_WALLET_PASSWORD`)
+
+## `xrpl dex`
+
+### `xrpl dex orderbook`
+
+Display the XRP/RLUSD order book (both bid and ask sides).
+
+```bash
+rlusd xrpl dex orderbook --json
+```
+
+### `xrpl dex buy`
+
+Place a buy limit order for RLUSD with XRP.
+
+```bash
+rlusd xrpl dex buy --amount <n> --price <p> [--password "$RLUSD_WALLET_PASSWORD"] --json
+```
+
+Options:
+
+- `--amount <n>`: RLUSD amount to receive (required)
+- `--price <p>`: max XRP to pay per 1 RLUSD (required)
+- `--password <password>`: wallet password
+
+### `xrpl dex sell`
+
+Place a sell limit order to sell RLUSD for XRP.
+
+```bash
+rlusd xrpl dex sell --amount <n> --price <p> [--password "$RLUSD_WALLET_PASSWORD"] --json
+```
+
+Options:
+
+- `--amount <n>`: RLUSD amount to sell (required)
+- `--price <p>`: XRP to receive per 1 RLUSD (required)
+- `--password <password>`: wallet password
+
+### `xrpl dex cancel`
+
+Cancel an open offer by its sequence number.
+
+```bash
+rlusd xrpl dex cancel --sequence <seq> [--password "$RLUSD_WALLET_PASSWORD"] --json
+```
+
+Options:
+
+- `--sequence <seq>`: OfferSequence from the original OfferCreate transaction (required)
+- `--password <password>`: wallet password
+
+## `xrpl amm`
+
+### `xrpl amm info`
+
+Show the XRP/RLUSD AMM pool state including TVL, trading fee, and LP token.
+
+```bash
+rlusd xrpl amm info --json
+```
+
+### `xrpl amm deposit`
+
+Deposit XRP and RLUSD liquidity into the AMM pool (two-asset deposit).
+
+```bash
+rlusd xrpl amm deposit --xrp <n> --rlusd <n> [--password "$RLUSD_WALLET_PASSWORD"] --json
+```
+
+Options:
+
+- `--xrp <n>`: XRP amount to deposit (required)
+- `--rlusd <n>`: RLUSD amount to deposit (required)
+- `--password <password>`: wallet password
+
+### `xrpl amm withdraw`
+
+Withdraw liquidity from the AMM pool by redeeming LP tokens.
+
+```bash
+rlusd xrpl amm withdraw --lp-tokens <n> [--password "$RLUSD_WALLET_PASSWORD"] --json
+```
+
+Options:
+
+- `--lp-tokens <n>`: LP token amount to redeem (required)
+- `--password <password>`: wallet password
+
+### `xrpl amm vote`
+
+Vote on the AMM trading fee.
+
+```bash
+rlusd xrpl amm vote --fee <n> [--password "$RLUSD_WALLET_PASSWORD"] --json
+```
+
+Options:
+
+- `--fee <n>`: proposed trading fee in 1/100,000 units, integer 0-1000 where 1000 = 1% (required)
+- `--password <password>`: wallet password
+
+### `xrpl amm swap`
+
+Swap XRP for RLUSD via the AMM (single-asset deposit).
+
+```bash
+rlusd xrpl amm swap --sell-xrp <n> [--password "$RLUSD_WALLET_PASSWORD"] --json
+```
+
+Options:
+
+- `--sell-xrp <n>`: XRP amount to contribute toward the swap (required)
+- `--password <password>`: wallet password
+
+## `xrpl pathfind`
+
+### `xrpl pathfind`
+
+Find cross-currency payment paths to deliver RLUSD to a destination (read-only,
+no signing required).
+
+```bash
+rlusd xrpl pathfind --to <address> --amount <n> --json
+```
+
+Options:
+
+- `--to <address>`: destination XRPL classic address (required)
+- `--amount <n>`: RLUSD value to deliver (required)
+
+Notes:
+
+- uses the default XRPL wallet address as `source_account`
+- no password needed; this is a read-only ledger query
+
+## `gas-balance`
+
+### `gas-balance`
+
+Show native token balances (XRP, ETH) for gas across configured wallets.
+
+```bash
+rlusd gas-balance --json
+```
+
+## `price`
+
+### `price`
+
+Show RLUSD reference price from Chainlink oracle or XRPL DEX.
+
+```bash
+rlusd price [--chain <chain>] [--source chainlink|dex] --json
+```
+
+Options:
+
+- `--chain <chain>`: EVM chain for Chainlink reads (defaults from config; use `xrpl` for DEX source)
+- `--source <source>`: `chainlink` or `dex` (auto-detected from default chain)
+
+## `market`
+
+### `market`
+
+Basic RLUSD market overview combining Chainlink USD price and XRPL DEX book.
+
+```bash
+rlusd market [--chain <chain>] --json
+```
+
+Options:
+
+- `--chain <chain>`: EVM chain for Chainlink reads
+
+## `send`
+
+### `send`
+
+Convenience command to send RLUSD to an address (auto-detects chain from
+address format when `--chain` is omitted).
+
+```bash
+rlusd send --to <address> --amount <amount> [--chain <chain>] [--from-wallet <name>] [--tag <tag>] [--memo <memo>] [--password "$RLUSD_WALLET_PASSWORD"] [--dry-run] --json
+```
+
+Options:
+
+- `--to <address>`: recipient address (required)
+- `--amount <amount>`: amount of RLUSD to send (required)
+- `--chain <chain>`: chain to send on (auto-detected from address if omitted)
+- `--from-wallet <name>`: wallet name to send from
+- `--tag <tag>`: XRPL destination tag (integer)
+- `--memo <memo>`: transaction memo (max 256 bytes)
+- `--password <password>`: wallet password
+- `--dry-run`: preview transaction without submitting
+
+## `faucet`
+
+### `faucet fund`
+
+Request test tokens from the network faucet (testnet/devnet only).
+
+```bash
+rlusd faucet fund [--chain <chain>] [--address <address>] --json
+```
+
+Options:
+
+- `--chain <chain>`: chain to fund, `xrpl` or `ethereum` (defaults from config)
+- `--address <address>`: address to fund (defaults to current wallet)
+
+Notes:
+
+- not available on mainnet
+- XRPL faucet provides XRP; for RLUSD testnet tokens use the official faucet at
+  `https://tryrlusd.com/`
+
+## `tx`
+
+### `tx status`
+
+Check transaction status on a chain.
+
+```bash
+rlusd tx status <hash> [--chain <chain>] --json
+```
+
+Options:
+
+- `<hash>`: transaction hash (positional argument)
+- `--chain <chain>`: chain (defaults from config)
+
+### `tx history`
+
+Show recent RLUSD transactions for the current wallet.
+
+```bash
+rlusd tx history [--chain <chain>] [--limit <n>] --json
+```
+
+Options:
+
+- `--chain <chain>`: chain (defaults from config)
+- `--limit <n>`: max number of entries (default 20, max 400)
+
 ## Current Supported Chain Keys
 
 Bundled registry entries:
