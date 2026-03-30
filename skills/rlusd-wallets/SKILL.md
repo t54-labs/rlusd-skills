@@ -82,6 +82,12 @@ rlusd wallet import --chain xrpl --name treasury-xrpl --secret s... --password "
 
 rlusd wallet use ops --chain ethereum --json
 rlusd wallet use treasury-xrpl --chain xrpl --json
+
+rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --json
+
+rlusd wallet keychain enable <name> --json
+rlusd wallet keychain disable <name> --json
+rlusd wallet keychain status <name> --json
 ```
 
 # Wallet Preflight
@@ -100,6 +106,10 @@ rlusd wallet use treasury-xrpl --chain xrpl --json
    command with `--json`.
 7. If the user wants that alias to become the default wallet for the chain, run
    `rlusd wallet use <name> --chain <chain> --json`.
+8. Keychain storage is enabled by default for new wallets and imports on macOS.
+   To manually manage Keychain entries, use `rlusd wallet keychain enable|disable|status`.
+9. To export an XRPL wallet seed (e.g., for third-party import), use
+   `rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --json`.
 
 # Quick Reference
 
@@ -109,7 +119,12 @@ rlusd wallet use treasury-xrpl --chain xrpl --json
 - Generate a new wallet: `rlusd wallet generate --chain <chain> --name <name> --json`
 - Import an existing wallet: `rlusd wallet import --chain <chain> --name <name> ... --json`
 - Set the default wallet: `rlusd wallet use <name> --chain <chain> --json`
-- Password source: prefer `RLUSD_WALLET_PASSWORD` for encrypted wallet actions
+- Export XRPL seed: `rlusd wallet export-seed --wallet <name> --password "$RLUSD_WALLET_PASSWORD" --json`
+- Enable Keychain for a wallet: `rlusd wallet keychain enable <name> --json`
+- Disable Keychain for a wallet: `rlusd wallet keychain disable <name> --json`
+- Check Keychain status: `rlusd wallet keychain status <name> --json`
+- Password source: prefer `RLUSD_WALLET_PASSWORD` for encrypted wallet actions.
+  Keychain storage is enabled by default for new wallets and imports on macOS.
 
 # Example
 
@@ -132,6 +147,10 @@ For "Send 25 RLUSD on Ethereum from my wallet":
   or chain.
 - Forgetting `RLUSD_WALLET_PASSWORD` when the CLI needs to decrypt an encrypted
   wallet.
+- Not checking `rlusd wallet keychain status <name> --json` when debugging
+  password issues. If Keychain is enabled, the CLI reads the password from the
+  system Keychain; a stale or missing Keychain entry causes decryption failures
+  even when the correct password is set via env var.
 
 # Common Rationalizations
 
