@@ -149,10 +149,11 @@ For "Send 25 RLUSD on Ethereum from my wallet":
   or chain.
 - Forgetting `RLUSD_WALLET_PASSWORD` when the CLI needs to decrypt an encrypted
   wallet.
-- Not checking `rlusd wallet keychain status [name]` when debugging password
-  issues. Use `keychain status` to see whether the CLI will read from Keychain,
-  env var, or prompt. A stale or missing Keychain entry can cause decryption
-  failures even when the correct password is set via env var.
+- Not understanding the password resolution order: `--password` flag first, then
+  `RLUSD_WALLET_PASSWORD` env var, then Keychain. Keychain is only consulted as
+  a last resort. If `--password` or the env var is set, Keychain is never read.
+  Use `rlusd wallet keychain status [name]` to check Keychain state when neither
+  the flag nor the env var is present and decryption fails.
 
 # Common Rationalizations
 

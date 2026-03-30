@@ -65,7 +65,7 @@ rlusd wallet list --json
 rlusd x402 fetch <url> --max-value <amount> --json
 rlusd x402 fetch <url> --wallet <name> --max-value <amount> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd x402 fetch <url> --wallet <name> --max-value <amount> --method POST --json-body '{"key":"value"}' --json
-rlusd x402 fetch <url> --wallet <name> --max-value <amount> --require-asset RLUSD --require-issuer r... --json
+rlusd x402 fetch <url> --wallet <name> --max-value <amount> --require-asset RLUSD --require-issuer rBvKgF3jSZWdJcwSsmoJspoXGpHUhBGurg --json
 rlusd x402 fetch <url> --wallet <name> --max-value <amount> --header "Authorization: Bearer tok" --json
 ```
 
@@ -96,9 +96,14 @@ Use the output to confirm (all success fields nest under `data`):
   Payment is authorized and signed in a single step, bounded by `--max-value`.
 - The CLI resolves the XRPL WebSocket URL and network ID from the active
   configuration. If XRPL is not configured, the command fails.
-- When `--require-asset` or `--require-issuer` are set, the CLI filters the
-  server's payment options before selecting. If no option matches, the command
-  fails with a clear error.
+- `--require-asset` does case-insensitive verbatim matching against the server's
+  advertised `asset` or `currency` field. XRPL servers may advertise RLUSD using
+  the hex-encoded currency code (`524C555344000000000000000000000000000000`)
+  instead of the human-readable symbol `RLUSD`. If `--require-asset RLUSD` fails
+  with `PAYMENT_NEGOTIATION_FAILED`, check the error's `accepts` array for the
+  actual currency value and retry with that value.
+- When `--require-asset` or `--require-issuer` are set and no server option
+  matches, the command fails with a clear error.
 - Header values must use the `"Name: value"` format with a colon separator.
   Invalid headers are rejected.
 - If the server's 402 response cannot be satisfied under the current constraints,
