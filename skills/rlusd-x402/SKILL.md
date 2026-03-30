@@ -29,21 +29,25 @@ and authenticated re-request.
 # Decision Guide
 
 - Before running `x402 fetch`, load `rlusd-wallets` to confirm the XRPL wallet
-  alias exists locally. The `--wallet` flag requires a local signer alias, not
-  an `r...` address.
+  alias exists locally. The `--wallet` flag is optional; when omitted, the CLI
+  falls back to the default XRPL wallet. When provided, it requires a local
+  signer alias, not an `r...` address.
 - The `--max-value` flag is required and must be a positive number. It caps the
   maximum amount the CLI will agree to pay per request.
 - The `--method` flag defaults to `GET`. Only `GET` and `POST` are supported.
 - Use `--require-asset` and `--require-issuer` to constrain which payment options
   the CLI will accept from the server. This is useful when the server advertises
   multiple payment options and you want to pay only with a specific asset.
-- Use `--json-body` for POST requests; the CLI auto-sets `Content-Type:
+- Use `--json-body` for POST requests; the CLI validates the JSON before
+  sending and fails immediately on malformed JSON. It auto-sets `Content-Type:
   application/json` unless a custom content-type header is provided.
 - Use `--header` to add custom request headers. The format is `"Name: value"`.
   Multiple headers can be passed by repeating the flag.
 - The CLI resolves the XRPL network from the active configuration environment
   (mainnet, testnet, devnet). Ensure the correct environment is active before
   fetching.
+- The CLI only selects payment options that use the `exact` scheme. Other
+  scheme types advertised by the server are ignored during selection.
 - The command is a single direct-execution command. There is no prepare/execute
   pattern for x402 fetch.
 - On success, the output envelope includes request details, response body, and
@@ -57,18 +61,20 @@ and authenticated re-request.
 rlusd config get --json
 rlusd wallet list --json
 
-rlusd x402 fetch <url> --wallet <name> --max-value <amount> --json
+# --wallet is optional; omit it to use the default XRPL wallet
+rlusd x402 fetch <url> --max-value <amount> --json
+rlusd x402 fetch <url> --wallet <name> --max-value <amount> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd x402 fetch <url> --wallet <name> --max-value <amount> --method POST --json-body '{"key":"value"}' --json
 rlusd x402 fetch <url> --wallet <name> --max-value <amount> --require-asset RLUSD --require-issuer r... --json
 rlusd x402 fetch <url> --wallet <name> --max-value <amount> --header "Authorization: Bearer tok" --json
 ```
 
-Use the output to confirm:
+Use the output to confirm (all success fields nest under `data`):
 
-- `response.ok` is `true` and `response.status` is a success code
-- `payment.negotiated` is `true` when x402 payment was performed
-- `payment.selected_requirement` shows which payment option was used
-- `payment.settlement` contains the on-chain settlement proof when present
+- `data.response.ok` is `true` and `data.response.status` is a success code
+- `data.payment.negotiated` is `true` when x402 payment was performed
+- `data.payment.selected_requirement` shows which payment option was used
+- `data.payment.settlement` contains the on-chain settlement proof when present
 - On failure, `code` is `PAYMENT_NEGOTIATION_FAILED` with the server's
   `accepts` array for debugging, or `X402_FETCH_FAILED` for other errors
 
@@ -78,7 +84,8 @@ Use the output to confirm:
   or negative values.
 - The `--method` flag only accepts `GET` or `POST`. Other HTTP methods are
   rejected.
-- The `--wallet` flag requires a local XRPL wallet alias, not an on-chain
+- The `--wallet` flag is optional. When omitted, the CLI uses the default XRPL
+  wallet. When provided, it requires a local XRPL wallet alias, not an on-chain
   address. Use `rlusd-wallets` to confirm the alias before running the command.
 - Do not assume example wallet aliases like `treasury-xrpl` already exist
   locally; use `rlusd-wallets` before any wallet-backed x402 fetch.
@@ -97,6 +104,19 @@ Use the output to confirm:
 - If the server's 402 response cannot be satisfied under the current constraints,
   review the `accepts` array in the error envelope and adjust `--max-value`,
   `--require-asset`, or `--require-issuer` accordingly.
+- `X402_FETCH_FAILED` is a catch-all error code. Common triggers include:
+  - Invalid `--max-value` (not a positive number)
+  - Wallet not found (name does not exist locally)
+  - Wallet is not an XRPL wallet (e.g., an EVM wallet was selected)
+  - Unsupported HTTP method (not GET or POST)
+  - Malformed `--json-body` (invalid JSON)
+  - Missing XRPL WebSocket configuration in the active environment
+  - Password resolution failure (no password provided and no Keychain entry)
+
+# References
+
+- [x402 Protocol](https://www.x402.org/) -- HTTP 402 payment negotiation standard
+- [Ripple RLUSD](https://ripple.com/solutions/stablecoin/) -- RLUSD stablecoin docs
 
 # Examples
 
