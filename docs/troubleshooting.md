@@ -178,6 +178,51 @@ What to do:
 - use `aave` for the current lend/supply path
 - use the reported quote freshness fields before relying on a swap quote
 
+## Unsupported Bridge Route
+
+Symptom:
+
+- bridge commands return a structured `COMMAND_ERROR`
+- the message says XRPL L1 bridging is not supported
+- the route uses a chain outside the supported Wormhole NTT labels
+
+Cause:
+
+- XRPL L1 to EVM bridging is not supported by Wormhole NTT
+- the supported bridge labels are `ethereum`, `base`, `optimism`, `ink`, and
+  `unichain`
+- bridge commands use NTT family labels, not registry labels such as
+  `ethereum-mainnet`
+
+What to do:
+
+- inspect supported routes with `rlusd bridge routes --json`
+- estimate only supported EVM NTT routes, for example
+  `rlusd bridge estimate --from ethereum --to base --amount 500 --json`
+- for XRPL payments, use the XRPL payment and trust-line workflows instead of
+  Wormhole NTT
+
+## Bridge Metadata or Quote Unavailable
+
+Symptom:
+
+- live Wormholescan metadata is unavailable
+- `bridge prepare` fails while quoting delivery value
+- source-chain RPC is missing or unavailable
+
+Cause:
+
+- `--live` depends on Wormholescan
+- `bridge prepare` needs source-chain RPC access for `quoteDeliveryPrice`
+- the source chain may be missing RPC configuration
+
+What to do:
+
+- retry without `--live` if bundled metadata is acceptable for discovery
+- confirm source-chain RPC config before `bridge prepare`
+- use `bridge estimate` before `bridge prepare` to check route limits
+- do not proceed to `bridge execute` until the local plan has been reviewed
+
 ## Invalid Address or Hash
 
 Symptom:

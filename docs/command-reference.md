@@ -390,6 +390,181 @@ rlusd defi supply execute --plan <path> [--confirm-plan-id <plan_id>] --password
 
 Returns submitted step hashes for each stored step.
 
+## `bridge`
+
+RLUSD Wormhole NTT bridge commands expose route metadata, estimates, prepared
+calldata, execution, and recent Wormholescan status data.
+
+Supported NTT chain labels:
+
+- `ethereum`
+- `base`
+- `optimism`
+- `ink`
+- `unichain`
+
+XRPL L1 to EVM bridging is not supported by Wormhole NTT.
+
+### `bridge routes`
+
+List supported RLUSD NTT routes.
+
+```bash
+rlusd bridge routes [--live] --json
+```
+
+Options:
+
+- `--live`: query live Wormholescan metadata instead of bundled static metadata
+
+Returns route rows with:
+
+- `from`
+- `to`
+- `from_wormhole_chain_id`
+- `to_wormhole_chain_id`
+- `from_token`
+- `to_token`
+- `mode`
+- `source_outbound_limit`
+- `destination_inbound_limit`
+- `source`
+
+### `bridge metadata`
+
+Show RLUSD Wormhole NTT deployment metadata.
+
+```bash
+rlusd bridge metadata [--live] --json
+```
+
+Returns:
+
+- `source`
+- `fetched_at`
+- `chains`
+- `warnings`
+- `links.wormholescan`
+- `links.docs`
+
+### `bridge estimate`
+
+Estimate route readiness and limits for an RLUSD Wormhole NTT transfer.
+
+```bash
+rlusd bridge estimate --from <chain> --to <chain> --amount <amount> [--live] --json
+```
+
+Options:
+
+- `--from <chain>`: source NTT chain label
+- `--to <chain>`: destination NTT chain label
+- `--amount <amount>`: RLUSD amount
+- `--live`: query live Wormholescan metadata instead of bundled static metadata
+
+Returns:
+
+- `route.from`
+- `route.to`
+- `route.source_manager`
+- `route.source_transceiver`
+- `route.source_outbound_limit`
+- `route.destination_inbound_limit`
+- `amount`
+- `token`
+- `decimals`
+- `transfer_modes`
+- `expected_flow`
+- `warnings`
+
+### `bridge prepare`
+
+Prepare approval calldata and NTT transfer calldata for an RLUSD bridge plan.
+This writes a local plan and does not submit transactions.
+
+```bash
+rlusd bridge prepare --from <chain> --to <chain> --amount <amount> --recipient <address> [--refund-address <address>] [--queue] [--live] --json
+```
+
+Options:
+
+- `--from <chain>`: source NTT chain label
+- `--to <chain>`: destination NTT chain label
+- `--amount <amount>`: RLUSD amount
+- `--recipient <address>`: destination EVM recipient address
+- `--refund-address <address>`: source-chain refund address; defaults to recipient
+- `--queue`: queue the transfer if the source route is rate limited
+- `--live`: query live Wormholescan metadata instead of bundled static metadata
+
+The emitted prepare response includes:
+
+- `plan_id`
+- `plan_path`
+- `action = bridge.ntt`
+- `route`
+- `amount`
+- `amount_raw`
+- `required_native_value_wei`
+- `required_native_value_eth`
+- `approval_to`
+- `transfer_to`
+- `approval_data`
+- `transfer_data`
+- `warnings`
+
+`human_summary` is a stored plan field. The stored plan also includes
+`intent.source_chain`, `intent.destination_chain`,
+`intent.required_native_value_wei`, and `intent.steps` with `approve` then
+`ntt_transfer` actions.
+
+### `bridge execute`
+
+Execute a prepared RLUSD Wormhole NTT transfer plan.
+
+```bash
+rlusd bridge execute --plan <path> --from-wallet <wallet_name> --confirm-plan-id <plan_id> --password "$RLUSD_WALLET_PASSWORD" --json
+```
+
+Notes:
+
+- loads and validates a `bridge.ntt` prepared plan
+- requires a matching `--confirm-plan-id`
+- resolves an EVM source-chain wallet from local `rlusd-cli` wallet storage
+- submits the stored approval transaction first
+- submits the stored NTT transfer transaction second
+- routine docs verification must not run this command against a funded wallet
+
+Returns:
+
+- `plan_id`
+- `plan_path`
+- `source_chain`
+- `approval_tx_hash`
+- `transfer_tx_hash`
+- `wormholescan`
+
+### `bridge status`
+
+Look up a recent RLUSD NTT transfer by operation id, Wormhole sequence, source
+tx hash, or target tx hash.
+
+```bash
+rlusd bridge status <id> --json
+```
+
+### `bridge history`
+
+List recent RLUSD NTT activity from Wormholescan.
+
+```bash
+rlusd bridge history [--address <address>] [--limit <n>] --json
+```
+
+Options:
+
+- `--address <address>`: emitter or transceiver address to query
+- `--limit <n>`: maximum operations to return, from 1 through 100
+
 ## `fiat`
 
 The `fiat` guidance commands are chain-agnostic. Their JSON envelopes omit
@@ -749,12 +924,14 @@ Bundled registry entries:
 
 - `ethereum-mainnet`
 - `xrpl-mainnet`
+- bridge NTT labels: `ethereum`, `base`, `optimism`, `ink`, `unichain`
 
 Some top-level read and wallet commands also accept family aliases such as
 `ethereum` and `xrpl`. Examples in this repo follow each subcommand's help
 surface: top-level reads often use the family alias, while network-scoped
 prepare, execute, wait, and receipt flows use `ethereum-mainnet` or
-`xrpl-mainnet`.
+`xrpl-mainnet`. Bridge commands use Wormhole NTT family labels such as
+`ethereum`, `base`, `optimism`, `ink`, and `unichain`.
 
 ## Important Error Codes
 
@@ -771,3 +948,5 @@ Common structured error codes include:
 - `PLAN_LOAD_FAILED`
 - `PLAN_INTEGRITY_MISMATCH`
 - `EXECUTION_FAILED`
+- `COMMAND_ERROR` for current bridge unsupported-route or XRPL L1 bridge
+  attempts

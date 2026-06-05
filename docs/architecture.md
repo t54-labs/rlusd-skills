@@ -32,6 +32,7 @@ these namespaces:
 - `evm`
 - `xrpl`
 - `defi`
+- `bridge`
 - `fiat`
 
 Every command supports JSON output and returns a shared envelope shape with:
@@ -59,6 +60,8 @@ Examples:
 - `resolve asset` loads chain and asset metadata
 - `evm tx wait` and `evm tx receipt` resolve the reviewed on-chain hash
 - `xrpl trustline status` and `xrpl account info` resolve XRPL issuer/account state
+- `bridge routes`, `bridge metadata`, `bridge status`, and `bridge history`
+  resolve Wormhole NTT route and transfer status data
 
 ### Prepare Commands
 
@@ -78,6 +81,11 @@ The plan ID is derived from a stable hash of the command, chain, action, asset,
 params, intent, and warnings. If the file is modified later, load-time integrity
 checks fail.
 
+Bridge prepare flows create `bridge.ntt` plans with approval calldata and NTT
+transfer calldata. They also record source and destination NTT chain labels,
+recipient fields, required native delivery value, and ordered `approve` then
+`ntt_transfer` steps.
+
 ### Execute Commands
 
 Execute flows:
@@ -90,8 +98,9 @@ Execute flows:
 5. resolve the configured signer
 6. submit the transaction intent
 
-Post-submit status is always retrieved with chain-specific wait and receipt
-commands instead of assuming that submission implies success.
+Post-submit status is retrieved with chain-specific wait and receipt commands
+for EVM and XRPL flows, or with `bridge status <id>` and `bridge history` for
+Wormhole NTT bridge flows, instead of assuming that submission implies success.
 
 ## Chain-Specific Design
 
@@ -118,6 +127,18 @@ commands instead of assuming that submission implies success.
 - supply preview/prepare/execute currently support `aave` only
 - DeFi supply execution is a multi-step flow that submits an `approve` step
   before the `supply` step
+
+### Bridge
+
+- Wormhole NTT bridge commands cover RLUSD routes across `ethereum`, `base`,
+  `optimism`, `ink`, and `unichain`
+- route metadata and recent transfer status come from bundled metadata or
+  Wormholescan when `--live` or status/history commands are used
+- `bridge prepare` creates a local plan with ERC-20 approval and NTT transfer
+  intent
+- `bridge execute` submits stored approval and transfer steps from the selected
+  local EVM wallet
+- XRPL L1 is outside this Wormhole NTT surface
 
 ## Wallet Model
 

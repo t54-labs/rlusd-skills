@@ -7,13 +7,15 @@ user-invocable: true
 # Purpose
 
 Use this skill when a request involves RLUSD and you need to decide whether the
-task belongs to Ethereum or XRPL.
+task belongs to Ethereum, XRPL, DeFi, x402, fiat guidance, or cross-chain bridge
+workflows.
 
 # When To Use This Skill
 
 - The user mentions RLUSD without clearly naming a chain.
 - The task involves balances, transfers, trust lines, approvals, or issuer
   metadata.
+- The task involves RLUSD bridge, cross-chain, Wormhole, or NTT routing.
 - You need to route a prompt to a more specific RLUSD skill.
 
 # Do Not Use This Skill When
@@ -28,6 +30,8 @@ task belongs to Ethereum or XRPL.
   `allowance`, `ERC-20`, or proxy-contract questions.
 - Route to `use-rlusd-evm-defi` for swap previews, venue discovery, lending,
   LP, vault, or broader DeFi routing questions on EVM chains.
+- Route to `rlusd-bridge` for bridge, cross-chain, Wormhole, NTT, Base,
+  Optimism, Ink, or Unichain bridge requests.
 - Route to `use-rlusd-xrpl` for `r...` addresses, `trust line`, `TrustSet`,
   `destination tag`, or issuer-model questions.
 - Route to `buy-redeem-rlusd` for onboarding, provider/rail guidance, bank
@@ -60,18 +64,22 @@ task belongs to Ethereum or XRPL.
 2. If the user already said DeFi, start with `rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json`.
 3. For Ethereum DeFi discovery, live swap quotes, and preview flows, use the
    `defi` namespace.
-4. For Ethereum reads, use top-level `balance` for RLUSD balances and
+4. For bridge, cross-chain, Wormhole, or NTT requests, start with
+   `rlusd bridge routes --json` or
+   `rlusd bridge estimate --from ethereum --to base --amount 500 --json`.
+5. For Ethereum reads, use top-level `balance` for RLUSD balances and
    `eth allowance` for wallet-backed allowance reads.
-5. Before any wallet-backed Ethereum or XRPL action, load `rlusd-wallets` if
+6. Before any wallet-backed Ethereum, XRPL, or bridge action, load `rlusd-wallets` if
    the flow depends on a local wallet alias.
-6. For Ethereum planning, use the `prepare` commands first and only call `execute`
+7. For Ethereum planning, use the `prepare` commands first and only call `execute`
    with an explicit confirmation that matches the prepared plan id.
-7. For chain-specific post-submit status, use `evm tx ...` or `xrpl tx ...`
+8. For chain-specific post-submit status, use `evm tx ...` or `xrpl tx ...`
    commands plus chain-specific receipt commands.
-8. For fiat onboarding, direct buy, and redeem guidance, use the `fiat`
+9. For bridge post-submit status, use `bridge status <id>` or `bridge history`.
+10. For fiat onboarding, direct buy, and redeem guidance, use the `fiat`
    namespace.
-9. For XRPL reads, planning, execution, and receipts, use the `xrpl` namespace.
-10. Load the matching child skill before attempting chain-specific reasoning.
+11. For XRPL reads, planning, execution, and receipts, use the `xrpl` namespace.
+12. Load the matching child skill before attempting chain-specific reasoning.
 
 ```bash
 rlusd resolve asset --chain ethereum-mainnet --json
@@ -81,6 +89,10 @@ rlusd defi quote swap --chain ethereum-mainnet --venue uniswap --from RLUSD --to
 rlusd defi supply preview --chain ethereum-mainnet --venue aave --amount 5000 --json
 rlusd defi supply prepare --chain ethereum-mainnet --venue aave --from-wallet ops --amount 5000 --json
 rlusd defi supply execute --plan <plan_path_from_prepare> --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
+rlusd bridge routes --json
+rlusd bridge estimate --from ethereum --to base --amount 500 --json
+rlusd bridge prepare --from ethereum --to base --amount 500 --recipient 0x... --json
+rlusd bridge execute --plan <plan_path_from_prepare> --from-wallet ops --confirm-plan-id <plan_id_from_prepare> --password "$RLUSD_WALLET_PASSWORD" --json
 rlusd balance --chain ethereum --address 0x... --json
 rlusd eth allowance --chain ethereum --owner-wallet ops --spender 0x... --json
 rlusd evm transfer prepare --chain ethereum-mainnet --from-wallet ops --to 0x... --amount 25.5 --json
@@ -113,6 +125,9 @@ rlusd x402 fetch <url> --wallet <name> --max-value <amount> --json
 - Top-level reads such as `balance`, `eth allowance`, and `wallet` commands use
   family aliases `ethereum` and `xrpl`, while network-scoped commands use
   `ethereum-mainnet` and `xrpl-mainnet`.
+- Bridge commands use Wormhole NTT family labels: `ethereum`, `base`,
+  `optimism`, `ink`, and `unichain`.
+- XRPL L1 to EVM bridging is not supported by Wormhole NTT.
 - Do not assume example wallet aliases like `ops` or `treasury-xrpl` already
   exist locally; use `rlusd-wallets` first when a flow depends on them.
 - Execute examples in this repo pass `--password "$RLUSD_WALLET_PASSWORD"`
@@ -134,6 +149,8 @@ rlusd x402 fetch <url> --wallet <name> --max-value <amount> --json
 - "I want to use RLUSD but I'm not sure where to start." -> start with `rlusd resolve asset --chain ethereum-mainnet --json`
 - "Where can RLUSD be used in DeFi?" -> use `use-rlusd-evm-defi`
 - "I want to use RLUSD in DeFi." -> start with `rlusd defi venues --chain ethereum-mainnet --capability swap,lend,lp --json`
+- "Bridge RLUSD from Ethereum to Base." -> use `rlusd-bridge`
+- "Show RLUSD Wormhole routes." -> use `rlusd-bridge`
 - "Can this XRPL wallet receive RLUSD?" -> use `use-rlusd-xrpl`
 - "Check whether I have an RLUSD wallet configured." -> use `rlusd-wallets`
 - "How do I buy or redeem RLUSD directly with Ripple?" -> use `buy-redeem-rlusd`

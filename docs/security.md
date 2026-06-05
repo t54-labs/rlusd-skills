@@ -72,6 +72,19 @@ Warnings that commonly matter in DeFi flows:
 - `preview_only`
 - `collateral_unsupported`
 
+## Bridge-Specific Rules
+
+- `bridge prepare` is non-destructive on-chain, but it queries source-chain RPC
+  for the Wormhole NTT delivery quote and writes a local plan file
+- review the route, `approval_data`, `transfer_data`,
+  `required_native_value_wei`, and stored plan `intent.steps` before execute
+- `bridge execute` submits the stored approval transaction before the stored NTT
+  transfer transaction
+- use a local EVM wallet alias and `RLUSD_WALLET_PASSWORD` for execution
+- use isolated low-value wallets for initial live bridge execution
+- do not run `bridge execute` during docs or skill verification
+- do not assume XRPL L1 to EVM bridging is supported by Wormhole NTT
+
 ## Operational Recommendations
 
 - keep `~/.config/rlusd-cli` wallet and config files out of version control when
@@ -79,7 +92,8 @@ Warnings that commonly matter in DeFi flows:
 - use dedicated low-value wallets for any initial live usage
 - review `human_summary`, `params`, and low-level `intent` data before any
   execute command
-- follow `wait` and `receipt` commands after every execute step
+- follow wait/receipt commands for EVM and XRPL flows, or bridge status/history
+  commands for Wormhole NTT bridge flows, after execute steps
 - extend the registry explicitly instead of inventing chain or venue metadata in
   prompts
 

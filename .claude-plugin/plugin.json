@@ -1,6 +1,6 @@
 {
   "name": "ripple",
-  "description": "RLUSD-focused agent skills for Ethereum, XRPL, DeFi, and institutional workflows using the external rlusd-cli runtime.",
+  "description": "RLUSD-focused agent skills for Ethereum, XRPL, DeFi, Wormhole bridge, and institutional workflows using the external rlusd-cli runtime.",
   "version": "0.1.0",
   "author": {
     "name": "RLUSD Skills Contributors"

@@ -15,7 +15,7 @@ top of that runtime, use this repo.
 
 ## What This Repo Includes
 
-- 10 packaged RLUSD skills for routing, wallet preflight, payments, DeFi,
+- 11 packaged RLUSD skills for routing, wallet preflight, payments, DeFi,
   fiat guidance, and x402
 - docs that describe the current skill-facing CLI contract
 - examples, security notes, and troubleshooting guides
@@ -28,6 +28,8 @@ top of that runtime, use this repo.
   prepare/execute flows
 - DeFi venue discovery, live swap quotes, prepared swap flows, Curve LP
   preview/prepare/execute, and Aave supply preview/prepare/execute
+- Wormhole NTT bridge routes, metadata, estimates, prepare/execute, status, and
+  history across supported EVM chains
 - fiat onboarding, buy, and redeem guidance
 - x402 buyer-side fetch flows with XRPL wallets
 - supporting CLI docs for helper surfaces such as `wallet keychain`,
@@ -43,6 +45,8 @@ top of that runtime, use this repo.
 - DeFi supply execution is `aave`-only
 - Curve swap and LP flows are limited to the RLUSD/USDC pool on
   `ethereum-mainnet`
+- Wormhole NTT bridge support uses `ethereum`, `base`, `optimism`, `ink`, and
+  `unichain`; XRPL L1 to EVM bridging is not supported by Wormhole NTT
 - fiat commands are guidance-only and do not automate provider onboarding or
   redemption submission
 - there is no multisig or external signer backend yet
@@ -129,6 +133,21 @@ rlusd defi quote swap \
   --amount 1000 \
   --json
 
+# Estimate an RLUSD Wormhole NTT bridge route
+rlusd bridge estimate \
+  --from ethereum \
+  --to base \
+  --amount 500 \
+  --json
+
+# Prepare a bridge plan for review
+rlusd bridge prepare \
+  --from ethereum \
+  --to base \
+  --amount 500 \
+  --recipient 0x1234567890123456789012345678901234567890 \
+  --json
+
 # Fetch an x402-protected resource
 rlusd x402 fetch \
   https://api.example.com/premium-feed \
@@ -137,9 +156,9 @@ rlusd x402 fetch \
   --json
 ```
 
-Most write paths follow `prepare -> review -> execute`, then `wait` or
-`receipt` for confirmation. `rlusd-x402` is the exception: it is a capped
-direct-execution flow bounded by `--max-value`.
+Most write paths follow `prepare -> review -> execute`, then `wait`, `receipt`,
+or bridge status/history commands for confirmation. `rlusd-x402` is the
+exception: it is a capped direct-execution flow bounded by `--max-value`.
 
 The examples in this repo pass explicit `--chain` and `--venue` for
 predictability. At runtime, top-level DeFi commands can also inherit `--chain`
@@ -148,7 +167,8 @@ venue from the stored plan. Use `--venue uniswap` when fee-tier selection
 matters, and `--venue curve` for the fixed Ethereum mainnet RLUSD/USDC pool.
 Top-level read and wallet commands may also use family aliases such as
 `ethereum` and `xrpl`, while network-scoped action flows use
-`ethereum-mainnet` and `xrpl-mainnet`.
+`ethereum-mainnet` and `xrpl-mainnet`. Bridge commands use Wormhole NTT labels:
+`ethereum`, `base`, `optimism`, `ink`, and `unichain`.
 
 ## Repository Layout
 
@@ -167,6 +187,7 @@ tests/                  Alignment tests for docs and skills
 | `docs/examples/ethereum.md` | Ethereum reads plus prepare/execute examples |
 | `docs/examples/xrpl.md` | XRPL trust-line and payment examples |
 | `docs/examples/defi.md` | DeFi venue, quote, swap, LP, and supply examples |
+| `docs/examples/bridge.md` | Wormhole NTT bridge route, prepare, execute, status, and history examples |
 | `docs/architecture.md` | How the skill layer routes into the external runtime |
 | `docs/security.md` | Plan integrity, wallet handling, and operational safety notes |
 | `docs/troubleshooting.md` | Structured error guidance and recovery steps |
@@ -180,6 +201,7 @@ tests/                  Alignment tests for docs and skills
 | **use-rlusd-ethereum** | `/ripple:use-rlusd-ethereum` | Ethereum-specific RLUSD guidance |
 | **use-rlusd-xrpl** | `/ripple:use-rlusd-xrpl` | XRPL-specific RLUSD guidance |
 | **use-rlusd-evm-defi** | `/ripple:use-rlusd-evm-defi` | DeFi venue discovery, quote lookup, and preview guidance |
+| **rlusd-bridge** | `/ripple:rlusd-bridge` | Inspect or execute RLUSD Wormhole NTT bridge workflows |
 | **buy-redeem-rlusd** | `/ripple:buy-redeem-rlusd` | Fiat onboarding plus buy and redeem guidance |
 | **rlusd-transfer** | `/ripple:rlusd-transfer` | Execute prepared RLUSD transfers and XRPL payments |
 | **rlusd-trustline** | `/ripple:rlusd-trustline` | Create or update XRPL trust lines |
